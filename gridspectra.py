@@ -26,7 +26,7 @@ class GridSpectra(vw_spectra.VWSpectra):
         #Re-seed for repeatability
         np.random.seed(23)
         cofm = self.get_cofm()
-        spectra.Spectra.__init__(self,num, base, cofm, axis, res, cdir, savefile=savefile,savedir=savedir, reload_file=True)
+        vw_spectra.VWSpectra.__init__(self,num, base, cofm, axis, res, cdir, savefile=savefile,savedir=savedir, reload_file=True)
 
         if dla:
             self.replace_not_DLA(10**20.3)
@@ -94,7 +94,7 @@ class TestGridSpectra(GridSpectra):
         #Re-seed for repeatability
         np.random.seed(seed)
         cofm = self.get_cofm()
-        spectra.Spectra.__init__(self,num, base, cofm, axis, res, cdir, savefile=savefile,savedir=savedir, reload_file=True)
+        vw_spectra.VWSpectra.__init__(self,num, base, cofm, axis, res, cdir, savefile=savefile,savedir=savedir, reload_file=True)
 
     def get_cofm(self, num = None):
         """Find a bunch of sightline positions through a single cell containing a DLA."""
