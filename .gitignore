@@ -1,4 +1,3 @@
-*.o
 extract
 rescale
 statistic
@@ -6,7 +5,6 @@ btest
 core.*
 extract-icc
 tags
-.*.swp
 *.pyc
 *.gch
 _spectra_priv.so
@@ -14,4 +12,3 @@ flux_extract.tar.gz
 .gdb_history
 .directory
 .nfs*
-*.dat
