@@ -226,3 +226,9 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         tau_l = np.roll(tau, offset[num])[low[num]:high[num]]
         return self.plot_spectrum_raw(tau_l,xaxis, xlims, flux)
 
+    def get_filt(self, elem, ion, thresh = 100):
+        """
+        Get an index list to exclude spectra where the ion is too small, or velocity width < 20
+        thresh - observable density threshold
+        """
+        return vw.VWSpectra.get_filt(self, elem, ion, thresh)

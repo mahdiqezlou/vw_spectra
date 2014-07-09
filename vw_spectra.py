@@ -328,6 +328,6 @@ class VWSpectra(ss.Spectra):
         met = np.max(self.get_density(elem, ion), axis=1)
         vw = self.vel_width(elem, ion)
         phys = self.dvbin/self.velfac*self.rscale
-        ind = np.where(np.logical_and(met > thresh/phys, vw > 20))
+        ind = np.where(np.logical_and(met > thresh/phys, vw > 15))
         return ind
 
