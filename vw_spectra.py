@@ -317,3 +317,17 @@ class VWSpectra(ss.Spectra):
         print "Fraction DLA: ",1.*dla/tot," Fraction LLS: ",1.*lls/tot," fraction less: ",1.*none/tot
         return seps
 
+    def get_filt(self, elem, ion, thresh = 100):
+        """
+        Get an index list to exclude spectra where the ion is too small, usually the result of
+        unresolved star formation.
+
+        thresh - observable density threshold
+        """
+        #Remember this is not in log.
+        met = np.max(self.get_density(elem, ion), axis=1)
+        vw = self.vel_width(elem, ion)
+        phys = self.dvbin/self.velfac*self.rscale
+        ind = np.where(np.logical_and(met > thresh/phys, vw > 20))
+        return ind
+
