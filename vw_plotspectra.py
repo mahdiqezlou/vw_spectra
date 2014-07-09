@@ -19,7 +19,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         (vbin, vels) = self.vel_width_hist(elem, ion, dv)
         plt.semilogx(vbin, vels, color=color, lw=3, ls=ls,label=self.label)
 
-    def plot_cum_vel_width(self, elem, ion, norm, cut=0, dv=0.1, color="red", ls="-"):
+    def plot_cum_vel_width(self, elem, ion, norm, dv=0.1, color="red", ls="-"):
         """Plot the velocity widths of this snapshot
         Parameters:
             elem - element to use
@@ -27,13 +27,6 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
             dv - bin spacing
         """
         (vbin, vels) = self.vel_width_hist(elem, ion, dv)
-        vel_width = self.vel_width(elem, ion)
-        ind = self.get_filt(elem, ion)
-        ind2 = np.where(vel_width[ind] > cut)
-        vel_width = vel_width[ind][ind2]
-        v_table = 10**np.arange(1, np.min((50,np.log10(np.max(vel_width)))), dv)
-        vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
-        vels = np.histogram(np.log10(vel_width),np.log10(v_table), density=True)[0]
         cvels = np.cumsum(vels)
         cvels = cvels*norm/cvels[-1]
         plt.semilogx(vbin, cvels, color=color, lw=3, ls=ls,label=self.label)

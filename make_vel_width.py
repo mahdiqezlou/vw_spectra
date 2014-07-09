@@ -151,8 +151,6 @@ def plot_met_corr(sims,snap):
 def plot_cum_vel_width_sims(sims, snap):
     """Plot velocity widths for a series of simulations"""
     (_, _, data) = vel_data.load_data(None)
-    cut = 20
-    data = data[np.where(data > cut)]
     norm = np.size(data)
     v_table = 10**np.arange(1, np.min((50,np.log10(np.max(data)))), 0.1)
     vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
@@ -164,7 +162,7 @@ def plot_cum_vel_width_sims(sims, snap):
     for sss in sims:
         #Make abs. plot
         hspec = get_hspec(sss, snap)
-        hspec.plot_cum_vel_width("Si", 2, norm=norm, cut=cut, color=colors[sss], ls=lss[sss])
+        hspec.plot_cum_vel_width("Si", 2, norm=norm, color=colors[sss], ls=lss[sss])
     hspec = get_hspec(7, snap)
     hspec.plot_cum_errors("Si", 2, samples=norm, color=colors[7])
     outstr = "cosmo_cum_vel_width_z"+str(snap)
@@ -470,17 +468,17 @@ if __name__ == "__main__":
 
 #     plot_vel_width_sims(simlist, 4, log=True)
     plot_vvir_models()
-    for zz in (1,3,5):
-        plot_met_corr(simlist,zz)
-        hspec_cache = {}
 
     for zz in (1, 3, 5):
 #         plot_v_struct(simlist, zz)
+        plot_met_corr(simlist,zz)
         plot_eq_width(simlist, zz)
         plot_metallicity(simlist, zz)
         plot_vel_width_sims(simlist, zz)
+        plot_cum_vel_width_sims(simlist, zz)
         plot_mean_median(simlist, zz)
         plot_f_peak(simlist, zz)
+        hspec_cache = {}
 
 #     for ss in simlist:
 #         plot_sep_frac(ss,3)
