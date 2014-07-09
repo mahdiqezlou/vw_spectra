@@ -148,6 +148,34 @@ def plot_met_corr(sims,snap):
         save_figure(path.join(outdir,out))
         plt.clf()
 
+def plot_cum_vel_width_sims(sims, snap):
+    """Plot velocity widths for a series of simulations"""
+    (_, _, data) = vel_data.load_data(None)
+    cut = 20
+    data = data[np.where(data > cut)]
+    norm = np.size(data)
+    v_table = 10**np.arange(1, np.min((50,np.log10(np.max(data)))), 0.1)
+    vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
+    cvels = np.cumsum(np.histogram(np.log10(data),np.log10(v_table))[0])
+    plt.semilogx(vbin, cvels, ls="-",color="black", label="N13")
+    cvelsp = np.cumsum(np.histogram(np.log10(data+5),np.log10(v_table))[0])
+    cvelsm = np.cumsum(np.histogram(np.log10(data-5),np.log10(v_table))[0])
+    plt.fill_between(vbin, cvelsm, cvelsp, color="black", alpha=0.3)
+    for sss in sims:
+        #Make abs. plot
+        hspec = get_hspec(sss, snap)
+        hspec.plot_cum_vel_width("Si", 2, norm=norm, cut=cut, color=colors[sss], ls=lss[sss])
+    hspec = get_hspec(7, snap)
+    hspec.plot_cum_errors("Si", 2, samples=norm, color=colors[7])
+    outstr = "cosmo_cum_vel_width_z"+str(snap)
+    plt.ylim(0,norm)
+    plt.ylabel("Cumulative Distribution")
+    plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
+    plt.xlim(10,1000)
+    plt.legend(loc=4,ncol=2)
+    save_figure(path.join(outdir,outstr))
+    plt.clf()
+
 def plot_vel_width_sims(sims, snap, log=False):
     """Plot velocity widths for a series of simulations"""
     vel_data.plot_prochaska_2008_data()

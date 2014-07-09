@@ -19,6 +19,50 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         (vbin, vels) = self.vel_width_hist(elem, ion, dv)
         plt.semilogx(vbin, vels, color=color, lw=3, ls=ls,label=self.label)
 
+    def plot_cum_vel_width(self, elem, ion, norm, cut=0, dv=0.1, color="red", ls="-"):
+        """Plot the velocity widths of this snapshot
+        Parameters:
+            elem - element to use
+            ion - ionisation state: 1 is neutral.
+            dv - bin spacing
+        """
+        (vbin, vels) = self.vel_width_hist(elem, ion, dv)
+        vel_width = self.vel_width(elem, ion)
+        ind = self.get_filt(elem, ion)
+        ind2 = np.where(vel_width[ind] > cut)
+        vel_width = vel_width[ind][ind2]
+        v_table = 10**np.arange(1, np.min((50,np.log10(np.max(vel_width)))), dv)
+        vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
+        vels = np.histogram(np.log10(vel_width),np.log10(v_table), density=True)[0]
+        cvels = np.cumsum(vels)
+        cvels = cvels*norm/cvels[-1]
+        plt.semilogx(vbin, cvels, color=color, lw=3, ls=ls,label=self.label)
+
+    def plot_cum_errors(self, elem, ion, samples, cut=0, dv=0.1, color="red"):
+        """Find and plot a 68% contour for a subsample of size samples, by Monte Carlo."""
+        vel_width = self.vel_width(elem, ion)
+        ind = self.get_filt(elem, ion)
+        vel_width = vel_width[ind]
+        v_table = 10**np.arange(1, np.min((50,np.log10(np.max(vel_width)))), dv)
+        vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
+        #Get a subsample
+        cdfs = np.array([self._cum_sample(vel_width, v_table, samples) for _ in xrange(1000)])
+        assert np.shape(cdfs) == (1000, np.size(vbin))
+        lower = np.percentile(cdfs, 16, axis=0)
+        upper = np.percentile(cdfs, 84, axis=0)
+        plt.fill_between(vbin, lower, upper, color=color, alpha=0.3)
+        lower = np.percentile(cdfs, 2.5, axis=0)
+        upper = np.percentile(cdfs, 97.5, axis=0)
+        plt.fill_between(vbin, lower, upper, color=color, alpha=0.1)
+
+    def _cum_sample(self, vel_width, v_table, samples):
+        """Get a cdf from a single subsample"""
+        ints = np.random.random_integers(0,np.size(vel_width)-1, samples)
+        vels = np.histogram(np.log10(vel_width[ints]),np.log10(v_table), density=False)[0]
+        cvels = np.cumsum(vels)
+        return cvels
+
+
     def plot_f_meanmedian(self, elem, ion, dv=0.03, color="red", ls="-"):
         """
         Plot an f_mean_median histogram
