@@ -150,23 +150,22 @@ def plot_met_corr(sims,snap):
 
 def plot_cum_vel_width_sims(sims, snap):
     """Plot velocity widths for a series of simulations"""
-    (_, _, data) = vel_data.load_data(None)
-    norm = np.size(data)
-    v_table = 10**np.arange(1, np.min((50,np.log10(np.max(data)))), 0.1)
-    vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
-    cvels = np.cumsum(np.histogram(np.log10(data),np.log10(v_table))[0])
-    plt.semilogx(vbin, cvels, ls="-",color="black", label="N13")
-    cvelsp = np.cumsum(np.histogram(np.log10(data+5),np.log10(v_table))[0])
-    cvelsm = np.cumsum(np.histogram(np.log10(data-5),np.log10(v_table))[0])
-    plt.fill_between(vbin, cvelsm, cvelsp, color="black", alpha=0.3)
+    (_, cvels) = vel_data.plot_cum_vw_data(None)
+    norm = cvels[-1]
     for sss in sims:
         #Make abs. plot
         hspec = get_hspec(sss, snap)
         hspec.plot_cum_vel_width("Si", 2, norm=norm, color=colors[sss], ls=lss[sss])
-    hspec = get_hspec(7, snap)
-    hspec.plot_cum_errors("Si", 2, samples=norm, color=colors[7])
+    if snap == 3:
+        hspec = get_hspec(7, snap, box=7.5)
+        hspec.label="SMALL"
+        hspec.plot_cum_vel_width("Si", 2, norm=norm, color="orange", ls="--")
+        hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color="orange")
+    else:
+        hspec = get_hspec(7, snap)
+        hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color=colors[7])
     outstr = "cosmo_cum_vel_width_z"+str(snap)
-    plt.ylim(0,norm)
+    plt.ylim(0,norm+1)
     plt.ylabel("Cumulative Distribution")
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
     plt.xlim(10,1000)
@@ -189,6 +188,14 @@ def plot_vel_width_sims(sims, snap, log=False):
         outstr+="_log"
     else:
         plt.ylim(1e-2,2)
+    if snap == 3:
+        hspec = get_hspec(7, snap, box=7.5)
+        hspec.label="SMALL"
+        hspec.plot_vel_width("Si", 2, color="orange", ls="--")
+        hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color="orange")
+    else:
+        hspec = get_hspec(7, snap)
+        hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color=colors[7])
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
     plt.xlim(10,1000)
     plt.legend(loc=2,ncol=3)
@@ -201,8 +208,14 @@ def plot_eq_width(sims, snap):
         #Make abs. plot
         hspec = get_hspec(sss, snap)
         hspec.plot_eq_width("Si", 2, 1526, color=colors[sss], ls=lss[sss])
+    hspec = get_hspec(7, snap)
     outstr = "cosmo_eq_width_z"+str(snap)
-    vel_data.plot_si1526_eqw(zrange[snap], nv_table=7)
+    if snap == 5:
+        nv_table = 7
+    else:
+        nv_table = 9
+    (center, _) = vel_data.plot_si1526_eqw(zrange[snap], nv_table=nv_table)
+    hspec.plot_eq_width_errors("Si", 2, 1526, 100, color=colors[7], nv_table=nv_table, min_width=center[0])
     plt.xlabel(r"log $(W_\mathrm{1526} / \AA )$")
     plt.ylim(0,3)
     plt.legend(loc=2,ncol=3)
@@ -230,6 +243,14 @@ def plot_mean_median(sims, snap):
     for sss in sims:
         hspec = get_hspec(sss, snap)
         hspec.plot_f_meanmedian("Si", 2, color=colors[sss], ls=lss[sss])
+    if snap == 3:
+        hspec = get_hspec(7, snap, box=7.5)
+        hspec.label="SMALL"
+        hspec.plot_f_meanmedian("Si", 2, color="orange", ls="--")
+        hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color="orange")
+    else:
+        hspec = get_hspec(7, snap)
+        hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color=colors[7])
     vel_data.plot_extra_stat_hist(False)
     plt.ylim(0,3)
     plt.legend(loc=2,ncol=3)
@@ -328,10 +349,42 @@ def plot_f_peak(sims, snap):
     for sss in sims:
         hspec = get_hspec(sss, snap)
         hspec.plot_f_peak("Si", 2, color=colors[sss], ls=lss[sss])
+    if snap == 3:
+        hspec = get_hspec(7, snap, box=7.5)
+        hspec.label="SMALL"
+        hspec.plot_f_peak("Si", 2, color="orange", ls="--")
+        hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=False, color="orange")
+    else:
+        hspec = get_hspec(7, snap)
+        hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=True, color=colors[7])
     plt.legend(loc=2,ncol=3)
     vel_data.plot_extra_stat_hist(True)
     plt.ylim(0,3)
     save_figure(path.join(outdir,"cosmo_peak_z"+str(snap)))
+    plt.clf()
+
+def plot_cum_f_peak_sims(sims, snap):
+    """Plot f_peak for a series of simulations"""
+    (_, cfmm) = vel_data.plot_cum_stat_data(True, None)
+    norm = cfmm[-1]
+    for sss in sims:
+        #Make abs. plot
+        hspec = get_hspec(sss, snap)
+        hspec.plot_cum_f_peak("Si", 2, norm=norm, color=colors[sss], ls=lss[sss])
+    if snap == 3:
+        hspec = get_hspec(7, snap, box=7.5)
+        hspec.label="SMALL"
+        hspec.plot_cum_f_peak("Si", 2, norm=norm, color="orange", ls="--")
+        hspec.plot_f_peak_errors("Si", 2, samples=norm,cumulative=True, color="orange")
+    else:
+        hspec = get_hspec(7, snap)
+        hspec.plot_f_peak_errors("Si", 2, samples=norm,cumulative=True, nv_table=50, color=colors[7])
+    outstr = "cosmo_cum_f_peak_z"+str(snap)
+    plt.ylim(0,norm+1)
+    plt.ylabel("Cumulative Distribution")
+    plt.xlim(0,1)
+    plt.legend(loc=4,ncol=2)
+    save_figure(path.join(outdir,outstr))
     plt.clf()
 
 def plot_vel_widths_cloudy():
