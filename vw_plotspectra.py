@@ -7,6 +7,17 @@ import numpy as np
 import kstest as ks
 import matplotlib.pyplot as plt
 
+def _bootstrap_sample(vel_data, v_table, samples, error):
+    """Generate a Monte Carlo error sample of the differential distribution."""
+    # Generate some Monte Carlo samples where each element is perturbed by
+    # a Gaussian, sigma given by error.
+    index = np.random.random_integers(0, np.size(vel_data)-1, samples)
+    bootstrap = vel_data[index]
+    if error > 0.:
+        bootstrap += np.random.normal(0,error,size=samples)
+    nn = np.histogram(bootstrap,v_table)[0]
+    return nn
+
 class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
     """Extends PlottingSpectra with velocity width specific code."""
     def plot_vel_width(self, elem, ion, dv=0.1, color="red", ls="-"):
@@ -31,30 +42,67 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         cvels = cvels*norm/cvels[-1]
         plt.semilogx(vbin, cvels, color=color, lw=3, ls=ls,label=self.label)
 
-    def plot_cum_errors(self, elem, ion, samples, cut=0, dv=0.1, color="red"):
-        """Find and plot a 68% contour for a subsample of size samples, by Monte Carlo."""
+    def plot_cum_f_peak(self, elem, ion, norm, dv=0.01, color="red", ls="-"):
+        """Plot the velocity widths of this snapshot
+        Parameters:
+            elem - element to use
+            ion - ionisation state: 1 is neutral.
+            dv - bin spacing
+        """
+        (vbin, vels) = self.f_peak_hist(elem, ion, dv)
+        cvels = np.cumsum(vels)
+        cvels = cvels*norm/cvels[-1]
+        plt.plot(vbin, cvels, color=color, lw=3, ls=ls,label=self.label)
+        plt.xlabel(r"$f_\mathrm{edg}$")
+
+    def plot_f_meanmedian_errors(self, elem, ion, samples, cumulative=False, nv_table = 15, color="red"):
+        """Plot 68% contour for error on the fmm distribution"""
+        f_peak = self.vel_mean_median(elem, ion)
+        ind = self.get_filt(elem, ion)
+        f_peak = f_peak[ind]
+        v_table=np.linspace(0,1,nv_table)
+        self._plot_errors(f_peak, v_table, samples, 0., cumulative, False, color)
+
+    def plot_f_peak_errors(self, elem, ion, samples, cumulative=False, nv_table=15, color="red"):
+        """Plot 68% contour for error on the fpeak distribution"""
+        f_peak = self.vel_peak(elem, ion)
+        ind = self.get_filt(elem, ion)
+        f_peak = f_peak[ind]
+        v_table=np.linspace(0,1,nv_table)
+        self._plot_errors(f_peak, v_table, samples, 0., cumulative, False, color)
+
+    def plot_eq_width_errors(self, elem, ion, line, samples, cumulative=False, min_width = -1.6, nv_table=15, color="red"):
+        """Plot 68% contour for error on the fpeak distribution"""
+        eq_width = self.equivalent_width(elem, ion, line)
+        ind = self.get_filt(elem, ion)
+        eq_width = eq_width[ind]
+        v_table = np.logspace(min_width, np.log10(np.max(eq_width)), nv_table)
+        self._plot_errors(np.log10(eq_width), np.log10(v_table), samples, 0.05, cumulative, False, color)
+
+    def plot_vw_errors(self, elem, ion, samples, cumulative=False, nv_table=15, color="red"):
+        """Plot 68% contour for error on the velocity width distribution"""
         vel_width = self.vel_width(elem, ion)
         ind = self.get_filt(elem, ion)
         vel_width = vel_width[ind]
-        v_table = 10**np.arange(1, np.min((50,np.log10(np.max(vel_width)))), dv)
+        v_table=np.logspace(1,np.log10(np.max(vel_width)+10),nv_table)
+        self._plot_errors(vel_width, v_table, samples, 5, cumulative, True, color)
+
+    def _plot_errors(self, vel_data, v_table, samples, error, cumulative=False, lognorm=True, color="red"):
+        """Find and plot a 68% contour for a subsample of size samples, by Monte Carlo."""
         vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
         #Get a subsample
-        cdfs = np.array([self._cum_sample(vel_width, v_table, samples) for _ in xrange(1000)])
-        assert np.shape(cdfs) == (1000, np.size(vbin))
-        lower = np.percentile(cdfs, 16, axis=0)
-        upper = np.percentile(cdfs, 84, axis=0)
+        cdfs = np.array([_bootstrap_sample(vel_data, v_table, samples, error) for _ in xrange(10000)])
+        if cumulative:
+            cdfs = np.cumsum(cdfs, axis=1)
+            norm = 1
+        else:
+            if lognorm:
+                v_table = np.log10(v_table)
+            norm = samples * np.array([(-v_table[i]+v_table[i+1]) for i in xrange(np.size(v_table)-1)])
+
+        lower = np.percentile(cdfs, 16, axis=0)/norm
+        upper = np.percentile(cdfs, 84, axis=0)/norm
         plt.fill_between(vbin, lower, upper, color=color, alpha=0.3)
-        lower = np.percentile(cdfs, 2.5, axis=0)
-        upper = np.percentile(cdfs, 97.5, axis=0)
-        plt.fill_between(vbin, lower, upper, color=color, alpha=0.1)
-
-    def _cum_sample(self, vel_width, v_table, samples):
-        """Get a cdf from a single subsample"""
-        ints = np.random.random_integers(0,np.size(vel_width)-1, samples)
-        vels = np.histogram(np.log10(vel_width[ints]),np.log10(v_table), density=False)[0]
-        cvels = np.cumsum(vels)
-        return cvels
-
 
     def plot_f_meanmedian(self, elem, ion, dv=0.03, color="red", ls="-"):
         """
