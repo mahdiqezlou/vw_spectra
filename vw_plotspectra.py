@@ -55,7 +55,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         plt.plot(vbin, cvels, color=color, lw=3, ls=ls,label=self.label)
         plt.xlabel(r"$f_\mathrm{edg}$")
 
-    def plot_f_meanmedian_errors(self, elem, ion, samples, cumulative=False, nv_table = 15, color="red"):
+    def plot_f_meanmedian_errors(self, elem, ion, samples, cumulative=False, nv_table = 11, color="red"):
         """Plot 68% contour for error on the fmm distribution"""
         f_peak = self.vel_mean_median(elem, ion)
         ind = self.get_filt(elem, ion)
@@ -63,7 +63,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         v_table=np.linspace(0,1,nv_table)
         self._plot_errors(f_peak, v_table, samples, 0., cumulative, False, color)
 
-    def plot_f_peak_errors(self, elem, ion, samples, cumulative=False, nv_table=15, color="red"):
+    def plot_f_peak_errors(self, elem, ion, samples, cumulative=False, nv_table=11, color="red"):
         """Plot 68% contour for error on the fpeak distribution"""
         f_peak = self.vel_peak(elem, ion)
         ind = self.get_filt(elem, ion)
@@ -71,7 +71,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         v_table=np.linspace(0,1,nv_table)
         self._plot_errors(f_peak, v_table, samples, 0., cumulative, False, color)
 
-    def plot_eq_width_errors(self, elem, ion, line, samples, cumulative=False, min_width = -1.6, nv_table=15, color="red"):
+    def plot_eq_width_errors(self, elem, ion, line, samples, cumulative=False, min_width = -1.6, nv_table=11, color="red"):
         """Plot 68% contour for error on the fpeak distribution"""
         eq_width = self.equivalent_width(elem, ion, line)
         ind = self.get_filt(elem, ion)
@@ -79,7 +79,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         v_table = np.logspace(min_width, np.log10(np.max(eq_width)), nv_table)
         self._plot_errors(np.log10(eq_width), np.log10(v_table), samples, 0.05, cumulative, False, color)
 
-    def plot_vw_errors(self, elem, ion, samples, cumulative=False, nv_table=15, color="red"):
+    def plot_vw_errors(self, elem, ion, samples, cumulative=False, nv_table=11, color="red"):
         """Plot 68% contour for error on the velocity width distribution"""
         vel_width = self.vel_width(elem, ion)
         ind = self.get_filt(elem, ion)
