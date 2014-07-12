@@ -18,22 +18,22 @@ print "Plots at: ",outdir
 
 zrange = {1:(7,3.5), 3:(7,0), 5:(2.5,0)}
 #Colors and linestyles for the simulations
-colors = {0:"pink", 1:"purple", 2:"cyan", 3:"green", 4:"gold", 5:"orange", 7:"blue", 6:"grey", 9:"red"}
-colors2 = {0:"darkred", 1:"indigo", 2:"cyan", 3:"darkgreen", 4:"gold", 5:"orange", 7:"darkblue", 6:"grey", 9:"darkred"}
-lss = {0:"--",1:":", 2:":",3:"-.", 4:"--", 5:"-",6:"--",7:"-", 9:"--"}
+colors = {0:"pink", 1:"purple", 2:"cyan", 3:"green", 4:"gold", 5:"red", 7:"blue", 6:"grey", 9:"orange"}
+colors2 = {0:"darkred", 1:"indigo", 2:"cyan", 3:"darkgreen", 4:"gold", 5:"red", 7:"darkblue", 6:"grey", 9:"darkred"}
+lss = {0:"--",1:":", 2:":",3:"-.", 4:"--", 5:"-",6:"--",7:"-", 9:"-"}
 labels = {0:"ILLUS",1:"HVEL", 2:"HVNOAGN",3:"NOSN", 4:"WMNOAGN", 5:"MVEL",6:"METAL",7:"DEF", 9:"FAST"}
 
 hspec_cache = {}
 
-def get_hspec(sim, snap):
+def get_hspec(sim, snap, box=25):
     """Get a spectra object, possibly from the cache"""
-    halo = myname.get_name(sim, True)
+    halo = myname.get_name(sim, True, box=box)
     #Load from a save file only
     try:
-        hspec = hspec_cache[(sim, snap)]
+        hspec = hspec_cache[(halo, snap)]
     except KeyError:
         hspec = ps.VWPlotSpectra(snap, halo, label=labels[sim])
-        hspec_cache[(sim, snap)] = hspec
+        hspec_cache[(halo, snap)] = hspec
     return hspec
 
 
@@ -182,10 +182,13 @@ if __name__ == "__main__":
     simlist = (1,3,7,9)  #range(8)
     zzz = (1,3,5)
     for zz in zzz:
+        shspec = get_hspec(5,zz, box=10)
+        (mbins, pdf) = shspec.mass_hist()
+        plt.semilogx(mbins,pdf,color="red", ls="--",label="SMALL")
         for ss in simlist:
             plot_mass_hists(ss, zz)
-        plt.legend(loc=1,ncol=2)
-        plt.ylim(0,2)
+        plt.legend(loc=1,ncol=3)
+        plt.ylim(0,2.5)
         plt.xlim(10,400)
         plt.xlabel(r"$v_\mathrm{vir}$ (km s$^{-1}$)")
         plt.xticks((10, 40, 100, 400), ("10","40","100","400"))
@@ -200,12 +203,14 @@ if __name__ == "__main__":
         plt.clf()
 
     for zz in zzz:
+        shspec = get_hspec(5,zz, box=10)
+        shspec.plot_virial_vel_vs_vel_width("Si", 2, color="red", ls="--", label="SMALL")
         for ss in simlist:
             plot_vvir(ss, zz)
         plt.xlabel(r"$v_\mathrm{90} / v_\mathrm{vir}$")
         plt.xlim(0.05, 30)
-        plt.legend(loc=1,ncol=2)
-        plt.ylim(0,2)
+        plt.legend(loc=1,ncol=3)
+        plt.ylim(0,2.3)
         plt.xticks((0.1, 1, 10), ("0.1","1","10"))
         save_figure(path.join(topdir,"cosmo_vw_vel_vir_z"+str(zz)))
         plt.clf()

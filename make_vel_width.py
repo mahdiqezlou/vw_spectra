@@ -23,10 +23,10 @@ print "Plots at: ",outdir
 zrange = {1:(7,3.5), 3:(3.5,2.5), 5:(2.5,0)}
 zzz = {1:4, 3:3, 5:2}
 #Colors and linestyles for the simulations
-colors = {0:"pink", 1:"purple", 2:"cyan", 3:"green", 4:"gold", 5:"orange", 7:"blue", 6:"grey", 8:"pink", 9:"red", 'A':"grey"}
-colors2 = {0:"darkred", 1:"indigo", 2:"cyan", 3:"darkgreen", 4:"gold", 5:"orange", 7:"darkblue", 6:"grey",8:"cyan", 9:"darkred",'A':"grey"}
-lss = {0:"--",1:":", 2:":",3:"-.", 4:"--", 5:"-",6:"--",7:"-", 8:"-",9:"--",'A':"--"}
-labels = {0:"ILLUS",1:"HVEL", 2:"HVNOAGN",3:"NOSN", 4:"WMNOAGN", 5:"MVEL",6:"METAL",7:"DEF", 8:"RICH",9:"FAST", 'A':"MOM"}
+colors = {0:"pink", 1:"purple", 2:"cyan", 3:"green", 4:"gold", 5:"red", 7:"blue", 6:"grey", 8:"pink", 9:"orange", 'A':"grey", 'S':"red"}
+colors2 = {0:"darkred", 1:"indigo", 2:"cyan", 3:"darkgreen", 4:"gold", 5:"red", 7:"darkblue", 6:"grey",8:"cyan", 9:"darkorange",'A':"grey", 'S':"grey"}
+lss = {0:"--",1:":", 2:":",3:"-.", 4:"--", 5:"-",6:"--",7:"-", 8:"-",9:"-",'A':"--"}
+labels = {0:"ILLUS",1:"HVEL", 2:"HVNOAGN",3:"NOSN", 4:"WMNOAGN", 5:"MVEL",6:"METAL",7:"DEF", 8:"RICH",9:"FAST", 'A':"MOM", 'S':"SMALL"}
 
 hspec_cache = {}
 
@@ -52,7 +52,7 @@ def plot_sep_frac(sim, snap):
     hspec.plot_sep_frac(color=colors[sim], ls=lss[sim])
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
 
-def plot_spectrum(sim, snap, num, low=0, high=-1, offset=0,subdir="", box=7.5):
+def plot_spectrum(sim, snap, num, low=0, high=-1, offset=0,subdir="", box=10):
     """Plot a spectrum"""
     hspec = get_hspec(sim, snap, snr=20., box=box)
     sdir = path.join(outdir,"spectra/"+subdir)
@@ -73,7 +73,7 @@ def plot_spectrum(sim, snap, num, low=0, high=-1, offset=0,subdir="", box=7.5):
     voff = hspec.dvbin*np.where(tau_l == np.max(tau_l))[0][0]+xoff
     return voff
 
-def plot_den(sim, snap, num, subdir="", xlim=100, voff = 0, box=7.5):
+def plot_den(sim, snap, num, subdir="", xlim=100, voff = 0, box=10):
     """Plot density"""
     hspec = get_hspec(sim, snap, snr=20., box=box)
     gs = gridspec.GridSpec(5,1)
@@ -156,14 +156,10 @@ def plot_cum_vel_width_sims(sims, snap):
         #Make abs. plot
         hspec = get_hspec(sss, snap)
         hspec.plot_cum_vel_width("Si", 2, norm=norm, color=colors[sss], ls=lss[sss])
-    if snap == 3:
-        hspec = get_hspec(7, snap, box=7.5)
-        hspec.label="SMALL"
-        hspec.plot_cum_vel_width("Si", 2, norm=norm, color="orange", ls="--")
-        hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color="orange")
-    else:
-        hspec = get_hspec(7, snap)
-        hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color=colors[7])
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_cum_vel_width("Si", 2, norm=norm, color=colors["S"], ls="--")
+    hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color=colors2["S"])
     outstr = "cosmo_cum_vel_width_z"+str(snap)
     plt.ylim(0,norm+1)
     plt.ylabel("Cumulative Distribution")
@@ -188,14 +184,10 @@ def plot_vel_width_sims(sims, snap, log=False):
         outstr+="_log"
     else:
         plt.ylim(1e-2,2)
-    if snap == 3:
-        hspec = get_hspec(7, snap, box=7.5)
-        hspec.label="SMALL"
-        hspec.plot_vel_width("Si", 2, color="orange", ls="--")
-        hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color="orange")
-    else:
-        hspec = get_hspec(7, snap)
-        hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color=colors[7])
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_vel_width("Si", 2, color=colors["S"], ls="--")
+    hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
     plt.xlim(10,1000)
     plt.legend(loc=2,ncol=3)
@@ -215,7 +207,7 @@ def plot_eq_width(sims, snap):
     else:
         nv_table = 9
     (center, _) = vel_data.plot_si1526_eqw(zrange[snap], nv_table=nv_table)
-    hspec.plot_eq_width_errors("Si", 2, 1526, 100, color=colors[7], nv_table=nv_table, min_width=center[0])
+    hspec.plot_eq_width_errors("Si", 2, 1526, 100, color=colors2["S"], nv_table=nv_table, min_width=center[0])
     plt.xlabel(r"log $(W_\mathrm{1526} / \AA )$")
     plt.ylim(0,3)
     plt.legend(loc=2,ncol=3)
@@ -243,14 +235,10 @@ def plot_mean_median(sims, snap):
     for sss in sims:
         hspec = get_hspec(sss, snap)
         hspec.plot_f_meanmedian("Si", 2, color=colors[sss], ls=lss[sss])
-    if snap == 3:
-        hspec = get_hspec(7, snap, box=7.5)
-        hspec.label="SMALL"
-        hspec.plot_f_meanmedian("Si", 2, color="orange", ls="--")
-        hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color="orange")
-    else:
-        hspec = get_hspec(7, snap)
-        hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color=colors[7])
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_f_meanmedian("Si", 2, color=colors["S"], ls="--")
+    hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     vel_data.plot_extra_stat_hist(False)
     plt.ylim(0,3)
     plt.legend(loc=2,ncol=3)
@@ -349,14 +337,10 @@ def plot_f_peak(sims, snap):
     for sss in sims:
         hspec = get_hspec(sss, snap)
         hspec.plot_f_peak("Si", 2, color=colors[sss], ls=lss[sss])
-    if snap == 3:
-        hspec = get_hspec(7, snap, box=7.5)
-        hspec.label="SMALL"
-        hspec.plot_f_peak("Si", 2, color="orange", ls="--")
-        hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=False, color="orange")
-    else:
-        hspec = get_hspec(7, snap)
-        hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=True, color=colors[7])
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_f_peak("Si", 2, color=colors["S"], ls="--")
+    hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     plt.legend(loc=2,ncol=3)
     vel_data.plot_extra_stat_hist(True)
     plt.ylim(0,3)
@@ -371,14 +355,10 @@ def plot_cum_f_peak_sims(sims, snap):
         #Make abs. plot
         hspec = get_hspec(sss, snap)
         hspec.plot_cum_f_peak("Si", 2, norm=norm, color=colors[sss], ls=lss[sss])
-    if snap == 3:
-        hspec = get_hspec(7, snap, box=7.5)
-        hspec.label="SMALL"
-        hspec.plot_cum_f_peak("Si", 2, norm=norm, color="orange", ls="--")
-        hspec.plot_f_peak_errors("Si", 2, samples=norm,cumulative=True, color="orange")
-    else:
-        hspec = get_hspec(7, snap)
-        hspec.plot_f_peak_errors("Si", 2, samples=norm,cumulative=True, nv_table=50, color=colors[7])
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_cum_f_peak("Si", 2, norm=norm, color=colors["S"], ls="--")
+    hspec.plot_f_peak_errors("Si", 2, samples=norm,cumulative=True, color=colors2["S"])
     outstr = "cosmo_cum_f_peak_z"+str(snap)
     plt.ylim(0,norm+1)
     plt.ylabel("Cumulative Distribution")
@@ -512,23 +492,24 @@ if __name__ == "__main__":
 #     for ss in (1,3,9):
 #         do_statistics(ss,3)
 
-    plot_spectrum_max(7,3, 7.5, 0.9, 0.025, 15, ffilter="vel_peak")
-    plot_spectrum_max(7,3, 7.5, 60, 20, 15)
-    plot_spectrum_max(7,3, 7.5, 100, 20, 15)
-    plot_spectrum_max(7,3, 7.5, 200, 35, 15)
-    plot_spectrum_max(7,3, 7.5, 400, 50, 15)
+    plot_spectrum_max(5,3, 10, 0.9, 0.025, 15, ffilter="vel_peak")
+    plot_spectrum_max(5,3, 10, 60, 20, 15)
+    plot_spectrum_max(5,3, 10, 100, 20, 15)
+    plot_spectrum_max(5,3, 10, 200, 35, 15)
+    plot_spectrum_max(5,3, 10, 400, 50, 15)
     simlist = (1,3,7,9) #range(8)
 
 #     plot_vel_width_sims(simlist, 4, log=True)
     plot_vvir_models()
 
-    for zz in (1, 3, 5):
+    for zz in (3,1, 5):
 #         plot_v_struct(simlist, zz)
         plot_met_corr(simlist,zz)
         plot_eq_width(simlist, zz)
-        plot_metallicity(simlist, zz)
+#         plot_metallicity(simlist, zz)
         plot_vel_width_sims(simlist, zz)
         plot_cum_vel_width_sims(simlist, zz)
+#         plot_cum_f_peak_sims(simlist, zz)
         plot_mean_median(simlist, zz)
         plot_f_peak(simlist, zz)
         hspec_cache = {}

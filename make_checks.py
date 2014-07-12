@@ -99,7 +99,7 @@ def test_lowres():
 def test_box_resolution():
     """Plot the velocity widths for different size boxes"""
     halo = myname.get_name(7)
-    halo10 = myname.get_name(7,box=7.5)
+    halo10 = myname.get_name(5,box=10)
 #     for zz in (1,3,5):
     zz = 3
     hspec = ps.VWPlotSpectra(zz, halo, label="DEF")
