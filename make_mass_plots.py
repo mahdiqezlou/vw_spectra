@@ -188,7 +188,7 @@ if __name__ == "__main__":
         for ss in simlist:
             plot_mass_hists(ss, zz)
         plt.legend(loc=1,ncol=3)
-        plt.ylim(0,2.5)
+        plt.ylim(0,2.8)
         plt.xlim(10,400)
         plt.xlabel(r"$v_\mathrm{vir}$ (km s$^{-1}$)")
         plt.xticks((10, 40, 100, 400), ("10","40","100","400"))

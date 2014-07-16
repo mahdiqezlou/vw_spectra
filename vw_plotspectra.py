@@ -20,7 +20,7 @@ def _bootstrap_sample(vel_data, v_table, samples, error):
 
 class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
     """Extends PlottingSpectra with velocity width specific code."""
-    def plot_vel_width(self, elem, ion, dv=0.1, color="red", ls="-"):
+    def plot_vel_width(self, elem, ion, dv=0.17, color="red", ls="-"):
         """Plot the velocity widths of this snapshot
         Parameters:
             elem - element to use
@@ -104,7 +104,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         upper = np.percentile(cdfs, 84, axis=0)/norm
         plt.fill_between(vbin, lower, upper, color=color, alpha=0.3)
 
-    def plot_f_meanmedian(self, elem, ion, dv=0.03, color="red", ls="-"):
+    def plot_f_meanmedian(self, elem, ion, dv=0.06, color="red", ls="-"):
         """
         Plot an f_mean_median histogram
         For args see plot_vel_width
@@ -113,7 +113,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         plt.plot(vbin, vels, color=color, lw=3, ls=ls,label=self.label)
         plt.xlabel(r"$f_\mathrm{mm}$")
 
-    def plot_f_peak(self, elem, ion, dv=0.03, color="red", ls="-"):
+    def plot_f_peak(self, elem, ion, dv=0.06, color="red", ls="-"):
         """
         Plot an f_peak histogram
         For args see plot_vel_width
