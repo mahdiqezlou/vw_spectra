@@ -240,8 +240,8 @@ def plot_mean_median(sims, snap):
     hspec.plot_f_meanmedian("Si", 2, color=colors["S"], ls="--")
     hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     vel_data.plot_extra_stat_hist(False)
-    plt.ylim(0,3)
-    plt.legend(loc=2,ncol=3)
+    plt.ylim(0,3.1)
+    plt.legend(loc=1,ncol=3)
     save_figure(path.join(outdir,"cosmo_mean_median_z"+str(snap)))
     plt.clf()
 
@@ -341,9 +341,9 @@ def plot_f_peak(sims, snap):
     hspec.label=labels["S"]
     hspec.plot_f_peak("Si", 2, color=colors["S"], ls="--")
     hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
-    plt.legend(loc=2,ncol=3)
+    plt.legend(loc=1,ncol=3)
     vel_data.plot_extra_stat_hist(True)
-    plt.ylim(0,3)
+    plt.ylim(0,3.1)
     save_figure(path.join(outdir,"cosmo_peak_z"+str(snap)))
     plt.clf()
 
