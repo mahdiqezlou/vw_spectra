@@ -160,7 +160,7 @@ def plot_mm_vs_vel(sim, snap):
 def plot_mult_frac(sim, snap):
     """Plot fraction of lines from separated halos"""
     hspec = get_hspec(sim, snap)
-    hspec.plot_mult_halo_frac(color=colors[sim], color2 = colors2[sim], ls=lss[sim])
+    hspec.plot_mult_halo_frac(color=colors[sim], ls=lss[sim])
 
 def plot_vw_break(sim, snap):
     """Plot breakdown of velocity width by halo mass"""
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         for ss in simlist:
             plot_mass_hists(ss, zz)
         plt.legend(loc=1,ncol=3)
-        plt.ylim(0,2.8)
+        plt.ylim(-0.03,2.8)
         plt.xlim(10,400)
         plt.xlabel(r"$v_\mathrm{vir}$ (km s$^{-1}$)")
         plt.xticks((10, 40, 100, 400), ("10","40","100","400"))

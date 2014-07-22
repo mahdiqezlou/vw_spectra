@@ -145,6 +145,11 @@ def plot_met_corr(sims,snap):
         plt.ylim(5e-4, 1.5)
         if sim == 7:
             plt.text(12,0.4,"z="+str(zzz[snap]), size=22)
+        else:
+            plt.text(12,0.4,labels[sim], size=22)
+        plt.setp(plt.gca().get_yticklabels(), fontsize=22)
+        plt.setp(plt.gca().get_xticklabels(), fontsize=22)
+        plt.xticks([10, 40, 100, 500],["10","40","100","500"])
         save_figure(path.join(outdir,out))
         plt.clf()
 
@@ -162,9 +167,10 @@ def plot_cum_vel_width_sims(sims, snap):
     hspec.plot_vw_errors("Si", 2, samples=norm,cumulative=True, color=colors2["S"])
     outstr = "cosmo_cum_vel_width_z"+str(snap)
     plt.ylim(0,norm+1)
-    plt.ylabel("Cumulative Distribution")
+#     plt.ylabel("Total Spectra")
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
-    plt.xlim(10,1000)
+    plt.xlim(9,1000)
+    plt.xticks([10, 100, 1000],["10","100","1000"])
     plt.legend(loc=4,ncol=2)
     save_figure(path.join(outdir,outstr))
     plt.clf()
@@ -189,7 +195,9 @@ def plot_vel_width_sims(sims, snap, log=False):
     hspec.plot_vel_width("Si", 2, color=colors["S"], ls="--")
     hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
+#     plt.ylabel("Spectra per log interval")
     plt.xlim(10,1000)
+    plt.xticks([10, 100, 1000],["10","100","1000"])
     plt.legend(loc=2,ncol=3)
     save_figure(path.join(outdir,outstr))
     plt.clf()
@@ -240,7 +248,7 @@ def plot_mean_median(sims, snap):
     hspec.plot_f_meanmedian("Si", 2, color=colors["S"], ls="--")
     hspec.plot_f_meanmedian_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     vel_data.plot_extra_stat_hist(False)
-    plt.ylim(0,3.1)
+    plt.ylim(-0.03,3.1)
     plt.legend(loc=1,ncol=3)
     save_figure(path.join(outdir,"cosmo_mean_median_z"+str(snap)))
     plt.clf()
@@ -343,7 +351,7 @@ def plot_f_peak(sims, snap):
     hspec.plot_f_peak_errors("Si", 2, samples=100,cumulative=False, color=colors2["S"])
     plt.legend(loc=1,ncol=3)
     vel_data.plot_extra_stat_hist(True)
-    plt.ylim(0,3.1)
+    plt.ylim(-0.03,3.1)
     save_figure(path.join(outdir,"cosmo_peak_z"+str(snap)))
     plt.clf()
 
@@ -427,7 +435,7 @@ def read_H_model():
     data = np.loadtxt("damp12_f.dat")
     v90 = data[:,2]
     vvir = data[:,10]
-    v_table = 10**np.arange(-2, np.log10(np.max(v90/vvir)), 0.1)
+    v_table = 10**np.arange(np.log10(np.min(v90/vvir)), np.log10(np.max(v90/vvir)), 0.1)
     vels = np.histogram(np.log10(v90/vvir), np.log10(v_table),density=True)[0]
     vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
     plt.semilogx(vbin, vels, color="purple", lw=3, ls=":",label="Haehnelt 98")
@@ -443,6 +451,7 @@ def plot_vvir_models():
     read_H_model()
     plt.legend(loc=2)
     plt.xlim(0.01, 10)
+    plt.ylim(-0.03, 1.8)
     plt.xticks((0.01, 0.1, 1, 10), ("0.01","0.1","1","10"))
     plt.xlabel(r"$v_\mathrm{90} / v_\mathrm{vir}$")
     save_figure(path.join(outdir, "vvir90_model"))
