@@ -73,30 +73,47 @@ def plot_spectrum(sim, snap, num, low=0, high=-1, offset=0,subdir="", box=10):
     voff = hspec.dvbin*np.where(tau_l == np.max(tau_l))[0][0]+xoff
     return voff
 
-def plot_den(sim, snap, num, subdir="", xlim=100, voff = 0, box=10):
+def plot_den(sim, snap, num, subdir="", voff = 0, box=10):
     """Plot density"""
     hspec = get_hspec(sim, snap, snr=20., box=box)
-    gs = gridspec.GridSpec(5,1)
-    ax1 = plt.subplot(gs[0,:])
-    plt.sca(ax1)
-    hspec.plot_den_to_tau("Si",2, num, thresh = 1e-9, xlim=xlim,voff=voff)
-    ax2 = plt.subplot(gs[1:,:])
+    #Adjust the default plot parameters, which do not scale well in a gridspec.
+    matplotlib.rc('xtick', labelsize=10)
+    matplotlib.rc('ytick', labelsize=10)
+    matplotlib.rc('axes', labelsize=10)
+    matplotlib.rc('font', size=8)
+    matplotlib.rc('lines', linewidth=1.5)
+    gs = gridspec.GridSpec(9,2)
+    ax3 = plt.subplot(gs[0:4,0])
+    plt.sca(ax3)
+    xoff = hspec.plot_spectrum("Si",2,-1,num, flux=False)
+    xlim = plt.xlim()
+    ax3.xaxis.set_label_position('top')
+    ax3.xaxis.tick_top()
+    voff += xoff
+    ax2 = plt.subplot(gs[5:,0])
     plt.sca(ax2)
-    hspec.plot_density("Si",2, num)
+    dxlim = hspec.plot_density("Si",2, num)
     plt.ylabel(r"n$_\mathrm{SiII}$ (cm$^{-3}$)")
-    plt.xlim(-1*xlim/hspec.velfac, xlim/hspec.velfac)
     plt.ylim(ymin=1e-9)
+    ax1 = plt.subplot(gs[4,0])
+    plt.sca(ax1)
+    xscale = dxlim*hspec.velfac/xlim[1]
+    hspec.plot_den_to_tau("Si",2, num, thresh = 1e-9, xlim=200,voff=voff, xscale=xscale)
+    ax1.axes.get_xaxis().set_visible(False)
+    plt.xlabel("")
+    plt.xlim(xlim)
     sdir = path.join(outdir,"spectra/"+subdir)
     if not path.exists(sdir):
         os.mkdir(sdir)
     save_figure(path.join(sdir,str(num)+"_cosmo"+str(sim)+"_Si_colden"))
     plt.clf()
-    hspec.plot_density("H",1,num)
-    plt.xlim(-1*xlim/hspec.velfac, xlim/hspec.velfac)
-    plt.ylabel(r"n$_\mathrm{HI}$ (cm$^{-3}$)")
-    plt.ylim(ymin=1e-6)
-    save_figure(path.join(sdir,str(num)+"_cosmo"+str(sim)+"_H_colden"))
-    plt.clf()
+    matplotlib.rc_file_defaults()
+#     hspec.plot_density("H",1,num)
+#     plt.xlim(-1*xlim/hspec.velfac, xlim/hspec.velfac)
+#     plt.ylabel(r"n$_\mathrm{HI}$ (cm$^{-3}$)")
+#     plt.ylim(ymin=1e-6)
+#     save_figure(path.join(sdir,str(num)+"_cosmo"+str(sim)+"_H_colden"))
+#     plt.clf()
 
 def plot_spectrum_max(sim, snap, box, velbin, velwidth, num, ffilter="vel_width"):
     """Plot spectrum with max vel width"""
@@ -117,8 +134,13 @@ def plot_spectrum_max(sim, snap, box, velbin, velwidth, num, ffilter="vel_width"
     index = np.random.randint(0, np.size(band), num)
     (low, high, offset) = hspec.find_absorber_width("Si",2, minwidth=minwidth)
     for nn in band[index]:
-        voff = plot_spectrum(sim, snap, nn, low[nn], high[nn], offset[nn], subdir=subdir, box=box)
-        plot_den(sim, snap, nn, subdir, xlim=1.1*vels[nn]/2., voff=voff,box=box)
+        #Compute constant velocity offset
+        tau = hspec.get_observer_tau("Si", 2, nn)
+        tau_l = np.roll(tau, offset[nn])[low[nn]:high[nn]]
+        assert np.max(tau_l) > 0.1
+        voff = hspec.dvbin*np.where(tau_l == np.max(tau_l))[0][0]
+#         voff = plot_spectrum(sim, snap, nn, low[nn], high[nn], offset[nn], subdir=subdir, box=box)
+        plot_den(sim, snap, nn, subdir, voff=voff,box=box)
         plt.clf()
 
 

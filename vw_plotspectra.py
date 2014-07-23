@@ -247,7 +247,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
             tpos = xaxis[0]+low+15
         else:
             tpos = xaxis[0]+high+5
-        plt.text(tpos,0.5,r"$\delta v_{90} = "+str(np.round(high-low,1))+r"$")
+        plt.text(tpos,np.max(tau)-0.5,r"$\delta v_{90} = "+str(np.round(high-low,1))+r"$")
         xlims = (np.max((xaxis[0],xaxis[0]+low-20)),np.min((xaxis[-1],xaxis[0]+high+20)))
         return (xaxis, xlims)
 
