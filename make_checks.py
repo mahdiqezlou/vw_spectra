@@ -161,6 +161,7 @@ def test_noise():
 def plot_check(hspec, hspec2, ofile, snap=3):
     """Plot velocity widths for two halos both absolutely and relatively"""
     hspec.plot_vel_width("Si",2, color="red")
+    hspec.plot_vw_errors("Si", 2, samples=100,cumulative=False, color="grey")
     hspec2.plot_vel_width("Si", 2, color="blue", ls="--")
     plt.legend()
     vel_data.plot_prochaska_2008_data()
