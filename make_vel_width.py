@@ -460,7 +460,7 @@ def read_H_model():
     v_table = 10**np.arange(np.log10(np.min(v90/vvir)), np.log10(np.max(v90/vvir)), 0.1)
     vels = np.histogram(np.log10(v90/vvir), np.log10(v_table),density=True)[0]
     vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
-    plt.semilogx(vbin, vels, color="purple", lw=3, ls=":",label="Haehnelt 98")
+    plt.semilogx(vbin, vels, color="purple", lw=3, ls=":",label="HSR98")
 
 def plot_vvir_models():
     """Plot histogram of velocity width by virial velocity"""
