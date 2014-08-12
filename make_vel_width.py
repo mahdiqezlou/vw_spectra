@@ -73,7 +73,7 @@ def plot_spectrum(sim, snap, num, low=0, high=-1, offset=0,subdir="", box=10):
     voff = hspec.dvbin*np.where(tau_l == np.max(tau_l))[0][0]+xoff
     return voff
 
-def plot_den(sim, snap, num, subdir="", voff = 0, box=10):
+def plot_den(sim, snap, num, subdir="", voff = 0, box=10, elem="Si", ion=2):
     """Plot density"""
     hspec = get_hspec(sim, snap, snr=20., box=box)
     #Adjust the default plot parameters, which do not scale well in a gridspec.
@@ -85,27 +85,27 @@ def plot_den(sim, snap, num, subdir="", voff = 0, box=10):
     gs = gridspec.GridSpec(9,2)
     ax3 = plt.subplot(gs[0:4,0])
     plt.sca(ax3)
-    xoff = hspec.plot_spectrum("Si",2,-1,num, flux=False)
+    xoff = hspec.plot_spectrum(elem,ion,-1,num, flux=False)
     xlim = plt.xlim()
     ax3.xaxis.set_label_position('top')
     ax3.xaxis.tick_top()
     voff += xoff
     ax2 = plt.subplot(gs[5:,0])
     plt.sca(ax2)
-    dxlim = hspec.plot_density("Si",2, num)
-    plt.ylabel(r"n$_\mathrm{SiII}$ (cm$^{-3}$)")
+    dxlim = hspec.plot_density(elem,ion, num)
+    plt.ylabel(r"n$_\mathrm{"+elem+"II}$ (cm$^{-3}$)")
     plt.ylim(ymin=1e-9)
     ax1 = plt.subplot(gs[4,0])
     plt.sca(ax1)
     xscale = dxlim*hspec.velfac/xlim[1]
-    hspec.plot_den_to_tau("Si",2, num, thresh = 1e-9, xlim=200,voff=voff, xscale=xscale)
+    hspec.plot_den_to_tau(elem, ion, num, thresh = 1e-9, xlim=200,voff=voff, xscale=xscale)
     ax1.axes.get_xaxis().set_visible(False)
     plt.xlabel("")
     plt.xlim(xlim)
     sdir = path.join(outdir,"spectra/"+subdir)
     if not path.exists(sdir):
         os.mkdir(sdir)
-    save_figure(path.join(sdir,str(num)+"_cosmo"+str(sim)+"_Si_colden"))
+    save_figure(path.join(sdir,str(num)+"_cosmo"+str(sim)+"_"+elem+"_colden"))
     plt.clf()
     matplotlib.rc_file_defaults()
 #     hspec.plot_density("H",1,num)
