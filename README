@@ -1,0 +1,10 @@
+Velocity widths
+
+A collection of scripts for making and plotting spectral velocity widths from simulations. 
+Depends on (and inherits) fake_spectra.
+
+The main reusable classes are in vw_spectra.py and vw_plotspectra.py
+
+The latter depends on matplotlib, the former does not. 
+
+The files starting make_* are scripts for making specific plots for 1407.7858.
