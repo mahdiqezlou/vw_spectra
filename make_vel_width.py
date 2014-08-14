@@ -454,7 +454,7 @@ def make_disc_model(nsample = 50000, scale=0.1,color="red", label="Disc"):
 
 def read_H_model():
     """Read and plot the data from Haehnelt et al 1998"""
-    data = np.loadtxt("damp12_f.dat")
+    data = np.loadtxt(outdir+"/../damp12_f.dat")
     v90 = data[:,2]
     vvir = data[:,10]
     v_table = 10**np.arange(np.log10(np.min(v90/vvir)), np.log10(np.max(v90/vvir)), 0.1)
