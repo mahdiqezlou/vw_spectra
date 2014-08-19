@@ -62,7 +62,7 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         phi = 2*math.pi*np.random.random_sample(self.NumLos)
         rr = radius*np.random.random_sample(self.NumLos)
         #Add them to halo centers
-        cofm = np.repeat(center, self.NumLos)
+        cofm = np.repeat([center], self.NumLos,axis=0)
         cofm[:,0]+=rr*np.sin(theta)*np.cos(phi)
         cofm[:,1]+=rr*np.sin(theta)*np.sin(phi)
         cofm[:,2]+=rr*np.cos(theta)
