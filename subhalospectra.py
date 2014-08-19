@@ -8,7 +8,7 @@ import subfindhdf
 import os.path as path
 import spectra
 
-class SubHaloSpectra(spectra.Spectra):
+class SubHaloSpectra(spectra.VWSpectra):
     """Generate metal line spectra from simulation snapshot"""
     def __init__(self,num, base, subhalolist, repeat = 1, res = 1., savefile=None, savedir=None, cdir=None):
         if savedir == None:
@@ -130,6 +130,7 @@ def get_lines(halo):
     halo.get_tau("Si",2,1260, force_recompute=True)
     halo.get_tau("Si",2,1526, force_recompute=True)
     halo.get_tau("Si",2,1808, force_recompute=True)
+    halo.get_observer_tau("Si",2, force_recompute=True)
     halo.get_tau("H",1,1215 , force_recompute=True)
     halo.get_density("Si",2)
     halo.get_density("Z",-1)
