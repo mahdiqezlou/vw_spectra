@@ -141,7 +141,7 @@ def get_lines(halo):
 if __name__ == "__main__":
     base = "/home/spb/data/Cosmo/Cosmo5_V6/L10n512/output/"
     for pair in ([1,4], [835, 837], [1556, 1558]):
-        ahs = SubHaloSpectra(3,base,pair)
+        ahs = SubHaloSpectra(3,base,pair, repeat = 1000)
         get_lines(ahs)
         ahs.save_file()
 
