@@ -6,15 +6,17 @@ import hdfsim
 import h5py
 import subfindhdf
 import os.path as path
-import spectra
+import vw_spectra
+import math
 
-class SubHaloSpectra(spectra.VWSpectra):
+class SubHaloSpectra(vw_spectra.VWSpectra):
     """Generate metal line spectra from simulation snapshot"""
-    def __init__(self,num, base, subhalolist, repeat = 1, res = 1., savefile=None, savedir=None, cdir=None):
+    def __init__(self,num, base, subhalopair, repeat = 1, res = 1., savefile=None, savedir=None, cdir=None):
         if savedir == None:
             savedir = path.join(base,"snapdir_"+str(num).rjust(3,'0'))
         if savefile == None:
-            savefile = "subhalo_spectra_"+"".join(map(str,subhalolist))+".hdf5"
+            savefile = "subhalo_spectra_"+"".join(map(str,subhalopair))+".hdf5"
+        assert len(subhalopair) == 2
         self.savefile = path.join(savedir,savefile)
         #Load halos to push lines through them
         f = hdfsim.get_file(num, base, 0)
@@ -29,42 +31,41 @@ class SubHaloSpectra(spectra.VWSpectra):
         self.sub_mass=np.array(subs.get_sub("SubhaloMass"))*1e10
         #r in kpc/h (comoving).
         self.sub_radii = np.array(subs.get_sub("SubhaloHalfmassRad"))
-        self.NumLos = 3*repeat*len(subhalolist)
+        self.NumLos = repeat
         #All through y axis
-        self.subhalolist=subhalolist
-        #Now we have the sightlines,
-        #TODO Make axis be the direction which minimises the projected distance
-        axis = np.array(repeat*len(subhalolist)*[1,2,3])
+        self.subhalopair=subhalopair
+        #Now we have the sightlines
+        dist=np.abs(self.sub_cofm[subhalopair[0]]- self.sub_cofm[subhalopair[1]])
+        axis = repeat*np.where(dist == np.min(dist))[0][0] + 1
         self.repeat = repeat
         #Re-seed for repeatability
         np.random.seed(23)
         cofm = self.get_cofm()
 
-        spectra.Spectra.__init__(self,num, base, cofm, axis, res, savefile=self.savefile, savedir=savedir,reload_file=True, cdir=cdir)
+        vw_spectra.VWSpectra.__init__(self,num, base, cofm, axis, res, savefile=self.savefile, savedir=savedir,reload_file=True, cdir=cdir)
 
         #If we did not load from a snapshot
         if cofm != None:
             self.replace_not_DLA()
 
-    def get_cofm(self, num = None):
+    def get_cofm(self, axis = None):
         """Find a bunch more sightlines"""
-        if num != None:
-            raise NotImplementedError
-        numlist =[]
-        for nn in self.subhalolist:
-            numlist += [nn] * 3 * self.repeat
-        cofm = self.sub_cofm[numlist]
-        #TODO: Perturb the sightlines within a sphere of the overlap between the (projected) halo virial radii.
-        #We want a representative sample of DLAs.
-        #maxr = self.sub_radii
+        cofm = self.sub_cofm[self.subhalopair]
+        #Perturb the sightlines within a sphere of the overlap between the halos.
+        #Centered on midpoint between central regions
+        center = (self.sub_cofm[self.subhalopair[0]] + self.sub_cofm[self.subhalopair[1]])/2.
+        #Of radius such that it touches the two central halo regions
+        #Maybe also encompass the smaller of the halos?
+        radius = np.abs(self.sub_cofm[self.subhalopair[0]] - self.sub_cofm[self.subhalopair[1]])/2.
         #Generate random sphericals
-        #theta = 2*math.pi*np.random.random_sample(self.NumLos)-math.pi
-        #phi = 2*math.pi*np.random.random_sample(self.NumLos)
-        #rr = np.repeat(maxr,self.repeat)*np.random.random_sample(self.NumLos)
+        theta = 2*math.pi*np.random.random_sample(self.NumLos)-math.pi
+        phi = 2*math.pi*np.random.random_sample(self.NumLos)
+        rr = radius*np.random.random_sample(self.NumLos)
         #Add them to halo centers
-        #cofm[:,0]+=rr*np.sin(theta)*np.cos(phi)
-        #cofm[:,1]+=rr*np.sin(theta)*np.sin(phi)
-        #cofm[:,2]+=rr*np.cos(theta)
+        cofm = np.repeat(center, self.NumLos)
+        cofm[:,0]+=rr*np.sin(theta)*np.cos(phi)
+        cofm[:,1]+=rr*np.sin(theta)*np.sin(phi)
+        cofm[:,2]+=rr*np.cos(theta)
         return cofm
 
     def save_file(self):
@@ -79,11 +80,11 @@ class SubHaloSpectra(spectra.VWSpectra):
         grp["radii"] = self.sub_radii
         grp["cofm"] = self.sub_cofm
         grp["mass"] = self.sub_mass
-        grp["subhalolist"] = self.subhalolist
+        grp["subhalopair"] = self.subhalopair
         grp.attrs["repeat"] = self.repeat
         grp.attrs["NumLos"] = self.NumLos
         f.close()
-        spectra.Spectra.save_file(self)
+        vw_spectra.VWSpectra.save_file(self)
 
     def load_savefile(self,savefile=None):
         """Load data from a file"""
@@ -93,11 +94,11 @@ class SubHaloSpectra(spectra.VWSpectra):
         self.sub_radii = np.array(grp["radii"])
         self.sub_cofm = np.array(grp["cofm"])
         self.sub_mass = np.array(grp["mass"])
-        self.subhalolist = list(grp["subhalolist"])
+        self.subhalopair = list(grp["subhalopair"])
         self.repeat = grp.attrs["repeat"]
         self.NumLos = grp.attrs["NumLos"]
         f.close()
-        spectra.Spectra.load_savefile(self, savefile)
+        vw_spectra.VWSpectra.load_savefile(self, savefile)
 
 
     def find_associated_halo(self, num):
