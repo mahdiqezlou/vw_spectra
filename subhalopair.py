@@ -56,7 +56,7 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         center = (self.sub_cofm[self.subhalopair[0]] + self.sub_cofm[self.subhalopair[1]])/2.
         #Of radius such that it touches the two central halo regions
         #Maybe also encompass the smaller of the halos?
-        radius = np.abs(self.sub_cofm[self.subhalopair[0]] - self.sub_cofm[self.subhalopair[1]])/2.
+        radius = np.sqrt(np.sum((self.sub_cofm[self.subhalopair[0]] - self.sub_cofm[self.subhalopair[1]])**2/2.))
         #Generate random sphericals
         theta = 2*math.pi*np.random.random_sample(self.NumLos)-math.pi
         phi = 2*math.pi*np.random.random_sample(self.NumLos)
