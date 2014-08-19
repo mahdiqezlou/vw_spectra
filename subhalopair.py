@@ -36,11 +36,13 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         self.subhalopair=subhalopair
         #Now we have the sightlines
         dist=np.abs(self.sub_cofm[subhalopair[0]]- self.sub_cofm[subhalopair[1]])
-        axis = repeat*np.where(dist == np.min(dist))[0][0] + 1
+        axis = np.repeat(np.where(dist == np.min(dist))[0] + 1, repeat)
         self.repeat = repeat
         #Re-seed for repeatability
         np.random.seed(23)
         cofm = self.get_cofm()
+
+        assert np.shape(cofm) == (np.shape(axis)[0],3)
 
         vw_spectra.VWSpectra.__init__(self,num, base, cofm, axis, res, savefile=self.savefile, savedir=savedir,reload_file=True, cdir=cdir)
 
