@@ -147,3 +147,13 @@ if __name__ == "__main__":
         get_lines(ahs)
         ahs.save_file()
 
+    for pair in ([2531,2532], [3240, 3241]):
+        ahs = SubHaloSpectra(4,base,pair, repeat = 1000)
+        get_lines(ahs)
+        ahs.save_file()
+
+    for pair in ([3775, 3776],):
+        ahs = SubHaloSpectra(5,base,pair, repeat = 1000)
+        get_lines(ahs)
+        ahs.save_file()
+
