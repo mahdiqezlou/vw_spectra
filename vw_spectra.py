@@ -187,7 +187,10 @@ class VWSpectra(ss.Spectra):
         tdiff = cum_tau - 0.95*cum_tau[-1]
         high = np.where(tdiff >= 0)[0][0]
         tdiff = cum_tau - 0.05*cum_tau[-1]
-        low = np.where(tdiff >= 0)[0][0]
+        try:
+            low = np.where(tdiff >= 0)[0][0]
+        except IndexError:
+            low = 0
         return (low, high)
 
     def _vel_median(self, tau):
