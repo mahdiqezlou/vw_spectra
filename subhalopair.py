@@ -157,3 +157,16 @@ if __name__ == "__main__":
         get_lines(ahs)
         ahs.save_file()
 
+    # big box z=2.5
+    base = "/n/ghernquist/Illustris/Runs/Illustris-1"
+    pairs63 = np.loadtxt("pairs063.txt")
+    for pair in zip(pairs63[:,0], pairs63[:,1]):
+        ahs = SubHaloSpectra(63,base,pair, repeat = 500)
+        get_lines(ahs)
+        ahs.save_file()
+    # big box z=2
+    pairs68 = np.loadtxt("pairs068.txt")
+    for pair in zip(pairs68[:,0], pairs68[:,1]):
+        ahs = SubHaloSpectra(68,base,pair, repeat = 500)
+        get_lines(ahs)
+        ahs.save_file()
