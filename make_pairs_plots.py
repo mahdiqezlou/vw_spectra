@@ -27,7 +27,7 @@ colors = ["black", "red", "blue", "green", "grey", "brown", "pink", "orange", "c
 
 def plot_median_pair(haloname, snapnum, subhalopair, idnum=1):
     """Plot the median and quartiles for a pair"""
-    label = "Pairs "+subhalopair[0]+"-"+subhalopair[1]
+    label = "Pairs "+str(subhalopair[0])+"-"+str(subhalopair[1])
     savefile = "subhalo_spectra_"+"".join(map(str,subhalopair))+".hdf5"
     hspec = ps.VWPlotSpectra(snapnum, haloname, label=label, savefile=savefile)
     plt.figure(1)
