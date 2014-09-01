@@ -25,6 +25,14 @@ def pr_num(num,rnd=2):
 
 colors = ["black", "red", "blue", "green", "grey", "brown", "pink", "orange", "cyan"]
 
+def plot_median_bar(hspecc, idnum):
+    """Plot median with error bars for velocity widths"""
+    plt.figure(2)
+    vw = hspecc.vel_width("Si", 2)
+    median = np.median(vw)
+    plt.errorbar([median,], idnum, xerr = [[median - np.percentile(vw, 25),], [np.percentile(vw, 75)- median,]], fmt='o')
+    plt.figure(1)
+
 def plot_median_pair(haloname, snapnum, subhalopair, idnum=1):
     """Plot the median and quartiles for a pair"""
     label = "Pairs "+str(subhalopair[0])+"-"+str(subhalopair[1])
@@ -32,11 +40,7 @@ def plot_median_pair(haloname, snapnum, subhalopair, idnum=1):
     hspec = ps.VWPlotSpectra(snapnum, haloname, label=label, savefile=savefile)
     plt.figure(1)
     hspec.plot_vel_width("Si", 2, color=colors[idnum], ls = "--")
-    vw = hspec.vel_width("Si", 2)
-    plt.figure(2)
-    median = np.median(vw)
-    plt.errorbar([median,], idnum, xerr = [[median - np.percentile(vw, 25),], [np.percentile(vw, 75)- median,]], fmt='o')
-    plt.figure(1)
+    plot_median_bar(hspec, idnum)
 
 sim = 5
 snap = 3
@@ -44,6 +48,7 @@ halo = myname.get_name(sim, True, box=10)
 #Load from a save file only
 total = ps.VWPlotSpectra(snap, halo, label="Total")
 total.plot_vel_width("Si", 2, color="black", ls = "-")
+plot_median_bar(total, 0)
 
 #Get the subhalo list
 subs=subfindhdf.SubFindHDF5(halo, snap)
@@ -87,4 +92,5 @@ save_figure(outdir+"pairs_vw")
 
 plt.figure(2)
 plt.legend()
+plt.ylim(-0.1, height+1)
 save_figure(outdir+"pairs_scatter")
