@@ -23,18 +23,27 @@ def pr_num(num,rnd=2):
     """Return a string rep of a number"""
     return str(np.round(num,rnd))
 
+colors = ["black", "red", "blue", "green", "grey", "brown", "pink", "orange", "cyan"]
+
+def plot_median_pair(haloname, snapnum, subhalopair, idnum=1):
+    """Plot the median and quartiles for a pair"""
+    label = "Pairs "+subhalopair[0]+"-"+subhalopair[1]
+    savefile = "subhalo_spectra_"+"".join(map(str,subhalopair))+".hdf5"
+    hspec = ps.VWPlotSpectra(snapnum, haloname, label=label, savefile=savefile)
+    plt.figure(1)
+    hspec.plot_vel_width("Si", 2, color=colors[idnum], ls = "--")
+    vw = hspec.vel_width("Si", 2)
+    plt.figure(2)
+    median = np.median(vw)
+    plt.errorbar(median, idnum, xerr = [median - np.percentile(vw, 25), np.percentile(vw, 75)- median], fmt='o')
+    plt.figure(1)
+
 sim = 5
 snap = 3
 halo = myname.get_name(sim, True, box=10)
 #Load from a save file only
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 1-4", savefile="subhalo_spectra_14.hdf5")
-hspec.plot_vel_width("Si", 2, color="red", ls = "--")
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 835-7", savefile="subhalo_spectra_835837.hdf5")
-hspec.plot_vel_width("Si", 2, color="blue", ls = "--")
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 1556-8", savefile="subhalo_spectra_15561558.hdf5")
-hspec.plot_vel_width("Si", 2, color="green", ls = "--")
-hspec = ps.VWPlotSpectra(snap, halo, label="Total")
-hspec.plot_vel_width("Si", 2, color="black", ls = "-")
+total = ps.VWPlotSpectra(snap, halo, label="Total")
+total.plot_vel_width("Si", 2, color="black", ls = "-")
 
 #Get the subhalo list
 subs=subfindhdf.SubFindHDF5(halo, snap)
@@ -42,31 +51,40 @@ subs=subfindhdf.SubFindHDF5(halo, snap)
 sub_mass=np.array(subs.get_sub("SubhaloMass"))
 loc= 2.4
 plt.text(10, loc, "Halo mass: (1e10 Msun)")
-for n in (1,4,835, 837, 1556, 1558):
-    loc-=0.1
-    plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
-# plt.text(10, 2.45, strrr)
-snap = 4
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 2531-2", savefile="subhalo_spectra_25312532.hdf5")
-hspec.plot_vel_width("Si", 2, color="grey", ls = "--")
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 3240-1", savefile="subhalo_spectra_32403241.hdf5")
-hspec.plot_vel_width("Si", 2, color="brown", ls = "--")
+height=1
+for pair in ([1,4], [835, 837], [1556, 1558]):
+    plot_median_pair(halo, snap, pair, height)
+    height+=1
+    for n in pair:
+        loc-=0.1
+        plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
 
+snap = 4
 #Get the subhalo list
 subs=subfindhdf.SubFindHDF5(halo, snap)
 sub_mass=np.array(subs.get_sub("SubhaloMass"))
-for n in (2531,2532,3240,3241):
-    loc-=0.1
-    plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
+for pair in ([2531,2532], [3240, 3241]):
+    plot_median_pair(halo, snap, pair, height)
+    height+=1
+    for n in pair:
+        loc-=0.1
+        plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
+
 snap = 5
-hspec = ps.VWPlotSpectra(snap, halo, label="Pairs 3775-6", savefile="subhalo_spectra_37753776.hdf5")
-hspec.plot_vel_width("Si", 2, color="pink", ls = "--")
 #Get the subhalo list
 subs=subfindhdf.SubFindHDF5(halo, snap)
 sub_mass=np.array(subs.get_sub("SubhaloMass"))
-for n in (3775,3776):
-    loc-=0.1
-    plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
+for pair in ([3775, 3776],):
+    plot_median_pair(halo, snap, pair, height)
+    height+=1
+    for n in pair:
+        loc-=0.1
+        plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
+
 plt.xlim(10,4000)
 plt.legend()
 save_figure(outdir+"pairs_vw")
+
+plt.figure(2)
+plt.legend()
+save_figure(outdir+"pairs_scatter")
