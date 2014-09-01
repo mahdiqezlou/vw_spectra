@@ -35,7 +35,7 @@ def plot_median_pair(haloname, snapnum, subhalopair, idnum=1):
     vw = hspec.vel_width("Si", 2)
     plt.figure(2)
     median = np.median(vw)
-    plt.errorbar(median, idnum, xerr = [median - np.percentile(vw, 25), np.percentile(vw, 75)- median], fmt='o')
+    plt.errorbar([median,], idnum, xerr = [[median - np.percentile(vw, 25),], [np.percentile(vw, 75)- median,]], fmt='o')
     plt.figure(1)
 
 sim = 5
