@@ -125,6 +125,7 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
 
     def replace_not_DLA(self, thresh=10**20.3):
         """Do nothing"""
+        print thresh
         return
 
 def get_lines(halo):
@@ -143,31 +144,31 @@ def get_lines(halo):
 
 if __name__ == "__main__":
     base = "/home/spb/data/Cosmo/Cosmo5_V6/L10n512/output/"
-    for pair in ([1,4], [835, 837], [1556, 1558]):
-        ahs = SubHaloSpectra(3,base,pair, repeat = 1000)
-        get_lines(ahs)
-        ahs.save_file()
+    pair = ([1,4], [835, 837], [1556, 1558])
+    ahs = SubHaloSpectra(3,base,pair, repeat = 1000)
+    get_lines(ahs)
+    ahs.save_file()
 
-    for pair in ([2531,2532], [3240, 3241]):
-        ahs = SubHaloSpectra(4,base,pair, repeat = 1000)
-        get_lines(ahs)
-        ahs.save_file()
+    pair = ([2531,2532], [3240, 3241])
+    ahs = SubHaloSpectra(4,base,pair, repeat = 1000)
+    get_lines(ahs)
+    ahs.save_file()
 
-    for pair in ([3775, 3776],):
-        ahs = SubHaloSpectra(5,base,pair, repeat = 1000)
-        get_lines(ahs)
-        ahs.save_file()
+    pair = ([3775, 3776],)
+    ahs = SubHaloSpectra(5,base,pair, repeat = 1000)
+    get_lines(ahs)
+    ahs.save_file()
 
     # big box z=2.5
     base = "/n/ghernquist/Illustris/Runs/Illustris-1"
     pairs63 = np.loadtxt("pairs063.txt")
-    for pair in zip(pairs63[:,0], pairs63[:,1]):
-        ahs = SubHaloSpectra(63,base,pair, repeat = 500)
-        get_lines(ahs)
-        ahs.save_file()
+    pair = zip(pairs63[:,0], pairs63[:,1])
+    ahs = SubHaloSpectra(63,base,pair, repeat = 500)
+    get_lines(ahs)
+    ahs.save_file()
     # big box z=2
     pairs68 = np.loadtxt("pairs068.txt")
-    for pair in zip(pairs68[:,0], pairs68[:,1]):
-        ahs = SubHaloSpectra(68,base,pair, repeat = 500)
-        get_lines(ahs)
-        ahs.save_file()
+    pair = zip(pairs68[:,0], pairs68[:,1])
+    ahs = SubHaloSpectra(68,base,pair, repeat = 500)
+    get_lines(ahs)
+    ahs.save_file()
