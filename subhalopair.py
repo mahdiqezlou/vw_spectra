@@ -36,14 +36,14 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         self.NumLos = nhalo*repeat
         self.subhalopair=subhalopair
         #Now we have the sightlines
-        dist=np.abs(self.sub_cofm[subhalopair[0]]- self.sub_cofm[subhalopair[1]])
-        axis = np.repeat(np.where(dist == np.min(dist))[0] + 1, nhalo*repeat)
         self.repeat = repeat
         #Re-seed for repeatability
         np.random.seed(23)
         cofm = np.empty([nhalo*repeat,3])
         total = 0
         for subp in subhalopair:
+            dist=np.abs(self.sub_cofm[subp[0]]- self.sub_cofm[subp[1]])
+            axis = np.repeat(np.where(dist == np.min(dist))[0] + 1, nhalo*repeat)
             cofm[total:total+repeat] = self.get_cofm_single_pair(subp, repeat)
             total+=repeat
 
@@ -53,7 +53,6 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
 
     def get_cofm_single_pair(self, subhalopair, nlines):
         """Find a bunch more sightlines"""
-        cofm = self.sub_cofm[subhalopair]
         #Perturb the sightlines within a sphere of the overlap between the halos.
         #Centered on midpoint between central regions
         center = (self.sub_cofm[subhalopair[0]] + self.sub_cofm[subhalopair[1]])/2.
