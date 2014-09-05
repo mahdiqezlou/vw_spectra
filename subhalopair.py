@@ -194,6 +194,7 @@ if __name__ == "__main__":
 
     # big box z=2.5
     base = "/n/ghernquist/Illustris/Runs/Illustris-1"
+    savedir = "/n/home11/spb/data/Illustris/"
     pairs63 = np.loadtxt("pairs063.txt")
     pair = zip(pairs63[:,0], pairs63[:,1])
     ahs = SubHaloSpectra(63,base,pair, repeat = 500)
