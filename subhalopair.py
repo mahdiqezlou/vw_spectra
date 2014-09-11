@@ -137,27 +137,32 @@ def _cut_array(save_array, npair, repeat):
 class SplitSpectra(SubHaloSpectra):
     """Class to split the savefiles into several smaller savefiles"""
     def __init__(self,num, base, npair, savefile=None, savedir=None, cdir=None):
+        self.colden = {}
+        self.velocity = {}
+        self.temp = {}
+        self.num_important = {}
+        self.tau = {}
+        self.tau_obs = {}
         if savedir == None:
             savedir = path.join(base,"snapdir_"+str(num).rjust(3,'0'))
         if savefile == None:
             savefile = "subhalo_spectra_pairs.hdf5"
+        self.savefile = path.join(savedir, savefile)
         self.load_savefile(self.savefile)
         self._load_all_multihash(self.tau_obs, "tau_obs")
         self._load_all_multihash(self.tau, "tau")
         self._load_all_multihash(self.colden, "colden")
         pp = self.subhalopair[npair]
-        self.savefile = "subhalo_spectra_"+str(pp[0])+str(pp[1])+".hdf5"
+        self.savefile = path.join(savedir, "subhalo_spectra_"+str(pp[0])+str(pp[1])+".hdf5")
         #then save it.
-        self.NumLos = self.self.repeat
-        self.cofm = self.cofm[npair*self.repeat:(npair+1)*self.repeat,3]
+        self.NumLos = self.repeat
+        self.cofm = self.cofm[npair*self.repeat:(npair+1)*self.repeat]
         self.axis = self.axis[npair*self.repeat:(npair+1)*self.repeat]
         #Observer tau is the strongest unsaturated line
-        _cut_array("tau_obs", npair,self.repeat)
+        _cut_array(self.tau_obs, npair,self.repeat)
         #Optical depth in specific lines
-        _cut_array("tau", npair,self.repeat)
-        _cut_array("colden", npair,self.repeat)
-        _cut_array("velocity", npair,self.repeat)
-        _cut_array("temperatures", npair,self.repeat)
+        _cut_array(self.tau, npair,self.repeat)
+        _cut_array(self.colden, npair,self.repeat)
         self.subhalopair = pp
         self.save_file()
 
