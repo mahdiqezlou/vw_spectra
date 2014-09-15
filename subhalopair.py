@@ -86,7 +86,7 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         grp.attrs["repeat"] = self.repeat
         grp.attrs["NumLos"] = self.NumLos
         f.close()
-        vw_spectra.VWSpectra.save_file(self)
+        vw_spectra.VWSpectra._save_file(self,f)
 
     def load_savefile(self,savefile=None):
         """Load data from a file"""
