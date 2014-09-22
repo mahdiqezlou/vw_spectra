@@ -85,7 +85,6 @@ class SubHaloSpectra(vw_spectra.VWSpectra):
         grp["subhalopair"] = self.subhalopair
         grp.attrs["repeat"] = self.repeat
         grp.attrs["NumLos"] = self.NumLos
-        f.close()
         vw_spectra.VWSpectra._save_file(self,f)
 
     def load_savefile(self,savefile=None):
@@ -181,32 +180,45 @@ def get_lines(halo):
 
 if __name__ == "__main__":
     base = "/home/spb/data/Cosmo/Cosmo5_V6/L10n512/output/"
-    pair = ([1,4], [835, 837], [1556, 1558])
-    ahs = SubHaloSpectra(3,base,pair, repeat = 1000)
-    get_lines(ahs)
-    ahs.save_file()
+#     pairs10 = np.loadtxt("pairs10-3.txt")
+#     pair = zip(pairs10[:,0], pairs10[:,1])
+#     ahs = SubHaloSpectra(3,base,pair, repeat = 500)
+#     get_lines(ahs)
+#     ahs.save_file()
 
-    pair = ([2531,2532], [3240, 3241])
-    ahs = SubHaloSpectra(4,base,pair, repeat = 1000)
-    get_lines(ahs)
-    ahs.save_file()
+    for snap in [1,2,3,4,5]:
+        pairs10 = np.loadtxt("pairs10-"+str(snap)+"2.txt")
+        if len(np.shape(pairs10)) == 1:
+            pairs10 = np.reshape(pairs10, (1, np.shape(pairs10)[0]))
+        pair = zip(pairs10[:,0], pairs10[:,1])
+        ahs = SubHaloSpectra(snap,base,pair, repeat = 500)
+        get_lines(ahs)
+        ahs.save_file()
+        for i in xrange(np.shape(pairs10)[0]):
+            sq = SplitSpectra(snap, base, i)
 
-    pair = ([3775, 3776],)
-    ahs = SubHaloSpectra(5,base,pair, repeat = 1000)
-    get_lines(ahs)
-    ahs.save_file()
-
-    # big box z=2.5
-    base = "/n/ghernquist/Illustris/Runs/Illustris-1"
-    savedir = "/n/home11/spb/data/Illustris/"
-    pairs63 = np.loadtxt("pairs063.txt")
-    pair = zip(pairs63[:,0], pairs63[:,1])
-    ahs = SubHaloSpectra(63,base,pair, repeat = 500)
-    get_lines(ahs)
-    ahs.save_file()
-    # big box z=2
-    pairs68 = np.loadtxt("pairs068.txt")
-    pair = zip(pairs68[:,0], pairs68[:,1])
-    ahs = SubHaloSpectra(68,base,pair, repeat = 500)
-    get_lines(ahs)
-    ahs.save_file()
+#     pair = ([2531,2532], [3240, 3241])
+#     ahs = SubHaloSpectra(4,base,pair, repeat = 1000)
+#     get_lines(ahs)
+#     ahs.save_file()
+#
+#     pair = ([3775, 3776],)
+#     ahs = SubHaloSpectra(5,base,pair, repeat = 1000)
+#     get_lines(ahs)
+#     ahs.save_file()
+#
+#Don't trust big box
+#    # big box z=2.5
+#    base = "/n/ghernquist/Illustris/Runs/Illustris-1"
+#    savedir = "/n/home11/spb/data/Illustris/"
+#    pairs63 = np.loadtxt("pairs063.txt")
+#    pair = zip(pairs63[:,0], pairs63[:,1])
+#    ahs = SubHaloSpectra(63,base,pair, repeat = 500)
+#    get_lines(ahs)
+#    ahs.save_file()
+#    # big box z=2
+#    pairs68 = np.loadtxt("pairs068.txt")
+#    pair = zip(pairs68[:,0], pairs68[:,1])
+#    ahs = SubHaloSpectra(68,base,pair, repeat = 500)
+#    get_lines(ahs)
+#    ahs.save_file()
