@@ -92,9 +92,6 @@ total = ps.VWPlotSpectra(snap, halo, label="Total")
 #plt.clf()
 
 #My simulation
-sim = 5
-snap = 3
-halo = myname.get_name(sim, True, box=10)
 plt.figure(2)
 total.plot_vel_width("Si", 2, color="black", ls = "-")
 plt.figure(1)
@@ -116,8 +113,8 @@ for snap in [3,4,5,1,2]:
         pairs = np.reshape(pairs, (1, np.shape(pairs)[0]))
     for pair in zip(pairs[:,0], pairs[:,1]):
         medians.append(plot_median_pair(halo, snap, pair, height))
-        height+=1
         print height, " snap: ", zzz[snap], " pair: ",str(pair[0]),"-",str(pair[1])
+        height+=1
     #     for n in pair:
     #         loc-=0.1
     #         plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
@@ -125,11 +122,54 @@ for snap in [3,4,5,1,2]:
 plt.xlim(10,4000)
 # plt.legend()
 save_figure(outdir+"pairs_vw_2")
+plt.clf()
 
 plt.figure(2)
 # plt.legend()
 plt.ylim(-0.1, height+1)
 save_figure(outdir+"pairs_scatter_2")
+plt.clf()
+
+#My simulation
+snap = 3
+plt.figure(2)
+total.plot_vel_width("Si", 2, color="black", ls = "-")
+plt.figure(1)
+tot_median = plot_median_bar(total, 0, "Total")
+
+medians = []
+height=1
+
+print "Larger sample"
+
+zzz = {1:"4",2:"3.5",3:"3",4:"2.5",5:"2"}
+#Get the subhalo list
+for snap in [3,4,5,1,2]:
+    subs=subfindhdf.SubFindHDF5(halo, snap)
+    #In solar masses
+    # sub_mass=np.array(subs.get_sub("SubhaloMass"))
+    # loc= 2.4
+    # plt.text(10, loc, "Halo mass: (1e10 Msun)")
+    pairs = np.loadtxt("pairs10-"+str(snap)+".txt")
+    if len(np.shape(pairs)) == 1:
+        pairs = np.reshape(pairs, (1, np.shape(pairs)[0]))
+    for pair in zip(pairs[:,0], pairs[:,1]):
+#         medians.append(plot_median_pair(halo, snap, pair, height))
+        print height, " snap: ", zzz[snap], " pair: ",str(pair[0]),"-",str(pair[1])
+        height+=1
+    #     for n in pair:
+    #         loc-=0.1
+    #         plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
+
+plt.xlim(10,4000)
+# plt.legend()
+save_figure(outdir+"pairs_vw_3")
+plt.clf()
+
+plt.figure(2)
+# plt.legend()
+plt.ylim(-0.1, height+1)
+save_figure(outdir+"pairs_scatter_3")
 plt.clf()
 
 table=np.logspace(np.log10(np.min(medians)),np.log10(np.max(medians)),5)
