@@ -102,6 +102,8 @@ tot_median = plot_median_bar(total, 0, "Total")
 
 medians = []
 height=1
+
+zzz = {1:"4",2:"3.5",3:"3",4:"2.5",5:"2"}
 #Get the subhalo list
 for snap in [3,4,5,1,2]:
     subs=subfindhdf.SubFindHDF5(halo, snap)
@@ -115,6 +117,7 @@ for snap in [3,4,5,1,2]:
     for pair in zip(pairs[:,0], pairs[:,1]):
         medians.append(plot_median_pair(halo, snap, pair, height))
         height+=1
+        print height, " snap: ", zzz[snap], " pair: ",str(pair[0]),"-",str(pair[1])
     #     for n in pair:
     #         loc-=0.1
     #         plt.text(10, loc,str(n)+": "+pr_num(sub_mass[n]))
