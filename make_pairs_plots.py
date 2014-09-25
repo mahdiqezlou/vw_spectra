@@ -144,7 +144,7 @@ print "Larger sample"
 
 zzz = {1:"4",2:"3.5",3:"3",4:"2.5",5:"2"}
 #Get the subhalo list
-for snap in [3,4,5,1,2]:
+for snap in [3,4,1,2]:
     subs=subfindhdf.SubFindHDF5(halo, snap)
     #In solar masses
     # sub_mass=np.array(subs.get_sub("SubhaloMass"))
