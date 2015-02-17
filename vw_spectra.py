@@ -39,7 +39,7 @@ class VWSpectra(ss.Spectra):
         strlam = int(lines.values()[ind].lambda_X)
         #Absorption in a strong line: eg, SiII1260.
         strong = self.get_tau(elem, ion, strlam)
-        (offset, roll) = self._get_rolled_spectra(strong)
+        (offset, roll) = ss._get_rolled_spectra(strong)
         #Minimum
         if minwidth > 0 and minwidth < self.nbins/2:
             low  = int(self.nbins/2-minwidth/self.dvbin)*np.ones(self.NumLos, dtype=np.int)
