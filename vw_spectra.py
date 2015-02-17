@@ -84,7 +84,7 @@ class VWSpectra(ss.Spectra):
         #Coefficients come from setting tau = 1, and expanding the Voigt function used
         #in Tepper-Garcia 2006 where exp(-x^2) ~ 0 (ie, far from the line center)
         #then simplifying a bit
-        width = np.sqrt(line.gamma_X*lambdacgs*self.light*col_den*sigma_a)/math.pi
+        width = np.sqrt(line.gamma_X*lambdacgs*ss.units.light*col_den*sigma_a)/math.pi
         #Convert from cm/s to km/s
         return width/1e5
 
