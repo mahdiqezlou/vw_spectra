@@ -120,7 +120,7 @@ class VWSpectra(ss.Spectra):
                         del tau_loc
             #Maximum tau in each spectra with each line,
             #after convolving with a Gaussian for instrumental broadening.
-            maxtaus = np.max(self.res_corr(tau,self.spec_res), axis=-1)
+            maxtaus = np.max(ss.res_corr(tau,self.spec_res), axis=-1)
             #Array for line indices
             ntau = np.empty([self.NumLos, self.nbins])
             #Use the maximum unsaturated optical depth
@@ -148,7 +148,7 @@ class VWSpectra(ss.Spectra):
         if number >= 0:
             ntau = ntau[number,:]
         # Convolve lines by a Gaussian filter of the resolution of the spectrograph.
-        ntau = self.res_corr(ntau, self.spec_res)
+        ntau = ss.res_corr(ntau, self.spec_res)
         #Add noise
         if noise and self.snr > 0:
             ntau = self.add_noise(self.snr, ntau, number)

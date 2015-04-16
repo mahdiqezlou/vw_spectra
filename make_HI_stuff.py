@@ -29,7 +29,7 @@ def plot_Omega_DLA(sim, color="red", ff=True):
     om = {}
     for snap in (1,3,5):
         hspec = ps.PlottingSpectra(snap, halo)
-        om[hspec.red] = hspec.omega_DLA()
+        om[hspec.red] = hspec.omega_abs()
     plt.semilogy(om.keys(), om.values(), 'o-', color=color)
     plt.xlabel("z")
     plt.ylabel(r"$\Omega_{DLA}$")
@@ -43,7 +43,7 @@ def plot_rho_HI(sim, color="red", ff=True):
     for zz in (4,3,2):
         try:
             hspec = ps.PlottingSpectra(zzz[zz], halo)
-            rho_HI[zz]=hspec.omega_DLA()
+            rho_HI[zz]=hspec.omega_abs()
             del hspec
         except TypeError:
             pass
