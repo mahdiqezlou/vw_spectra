@@ -38,8 +38,11 @@ def plot_vel_width_SiII(sim, snap):
        Plot the change in velocity widths between the full calculation and
        setting n(Si+)/n(Si) = n(HI)/n(H)
     """
-    halo = myname.get_name(sim)
     #Load from a save file only
+    halo = myname.get_name(5, box=10)
+    hspec_tesc = ps.VWPlotSpectra(snap, halo, savefile="halo_spectra_2.hdf5") #,cdir=path.expanduser("~/codes/cloudy_tables/ion_out_no_atten/"))
+    hspec_tesc.plot_vel_width("Si", 2, color="green", ls="-.")
+    halo = myname.get_name(sim)
     hspec = ps.VWPlotSpectra(snap, halo)
     hspecSi = ps.VWPlotSpectra(snap, halo,savefile="SiHI_spectra.hdf5")
     plot_check(hspec, hspecSi,"SiHI")
@@ -107,6 +110,24 @@ def test_box_resolution():
     hspec2 = ps.VWPlotSpectra(zz, halo10, label="SMALL")
     plot_check(hspec,hspec2,"box", zz)
 
+def test_min_wind():
+    """Plot the velocity widths for minimum wind velocity"""
+    halo = myname.get_name(7)
+    halo10 = myname.get_name(5)
+    zz = 3
+    hspec = ps.VWPlotSpectra(zz, halo, label="DEF")
+    hspec2 = ps.VWPlotSpectra(zz, halo10, label="SLIKE")
+    plot_check(hspec,hspec2,"minwind", zz)
+
+def test_metal():
+    """Plot the velocity widths for metal enrichment"""
+    halo = myname.get_name(7)
+    halo10 = myname.get_name(8)
+    zz = 3
+    hspec = ps.VWPlotSpectra(zz, halo, label="DEF")
+    hspec2 = ps.VWPlotSpectra(zz, halo10, label="ENRICH")
+    plot_check(hspec,hspec2,"enrich", zz)
+
 def test_big_box():
     """Plot the velocity widths for different size boxes"""
     halo = myname.get_name(0)
@@ -157,6 +178,23 @@ def test_noise():
     hspec = ps.VWPlotSpectra(3, halo, snr=0.,label="No Noise")
     hspec2 = ps.VWPlotSpectra(3, halo, snr = 20.,label="Noise")
     plot_check(hspec,hspec2,"noise")
+
+def plot_corr_as_points():
+    """Plot the correlation as points"""
+    halo = myname.get_name(7)
+    hspec = ps.VWPlotSpectra(3, halo)
+    vel = hspec.vel_width("Si", 2)
+    met = hspec.get_metallicity()
+    #Ignore objects too faint to be seen
+    ind2 = np.where(met > 1e-4)
+    met = met[ind2]
+    vel = vel[ind2]
+    plt.loglog(vel, met, 'o', color="blue")
+    plt.xlim(10,2e3)
+    plt.ylabel(r"$\mathrm{Z} / \mathrm{Z}_\odot$")
+    plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
+    save_figure(path.join(outdir,"cosmo_corr_as_points"))
+    plt.clf()
 
     #Higher resolution spectrum
 def plot_check(hspec, hspec2, ofile, snap=3):
@@ -222,6 +260,9 @@ if __name__ == "__main__":
 #     test_pecvel()
     test_tophat()
 
+    plot_corr_as_points()
+    test_min_wind()
+    test_metal()
     plot_vel_width_SiII(7, 3)
     plot_vel_width_SiII_keating(7, 3)
 

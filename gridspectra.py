@@ -30,9 +30,9 @@ class GridSpectra(vw_spectra.VWSpectra):
         vw_spectra.VWSpectra.__init__(self,num, base, cofm, axis, res, cdir, savefile=savefile,savedir=savedir, reload_file=True)
 
         if dla:
-            self.replace_not_DLA(10**20.3)
+            self.replace_not_DLA(ndla=numlos, thresh=10**20.3)
         else:
-            self.replace_not_DLA(10**17)
+            self.replace_not_DLA(ndla=numlos, thresh=10**17)
         print("Found DLAs")
 
 
@@ -74,7 +74,7 @@ class GridSpectra(vw_spectra.VWSpectra):
         return np.array((yslab, zslab))
 
 
-class TestGridSpectra(GridSpectra):
+class TestGridSpectra(GridSpectra, vw_spectra.VWSpectra):
     """This specialised class tests the spectral generation code by loading several sightlines in a single cell and finding
     their average value, compared to the value in the cell."""
     def __init__(self,num, base, numlos=5000, res = 1., seed=23,cdir = None, dla=True, savefile="grid_spectra_DLA.hdf5", savedir=None, gridfile="boxhi_grid_H2.hdf5"):

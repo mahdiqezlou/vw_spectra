@@ -39,7 +39,7 @@ class VWSpectra(ss.Spectra):
         strlam = int(lines.values()[ind].lambda_X)
         #Absorption in a strong line: eg, SiII1260.
         strong = self.get_tau(elem, ion, strlam)
-        (offset, roll) = self._get_rolled_spectra(strong)
+        (offset, roll) = ss._get_rolled_spectra(strong)
         #Minimum
         if minwidth > 0 and minwidth < self.nbins/2:
             low  = int(self.nbins/2-minwidth/self.dvbin)*np.ones(self.NumLos, dtype=np.int)
@@ -84,7 +84,7 @@ class VWSpectra(ss.Spectra):
         #Coefficients come from setting tau = 1, and expanding the Voigt function used
         #in Tepper-Garcia 2006 where exp(-x^2) ~ 0 (ie, far from the line center)
         #then simplifying a bit
-        width = np.sqrt(line.gamma_X*lambdacgs*self.light*col_den*sigma_a)/math.pi
+        width = np.sqrt(line.gamma_X*lambdacgs*ss.units.light*col_den*sigma_a)/math.pi
         #Convert from cm/s to km/s
         return width/1e5
 
@@ -120,7 +120,7 @@ class VWSpectra(ss.Spectra):
                         del tau_loc
             #Maximum tau in each spectra with each line,
             #after convolving with a Gaussian for instrumental broadening.
-            maxtaus = np.max(self.res_corr(tau,self.spec_res), axis=-1)
+            maxtaus = np.max(ss.res_corr(tau,self.spec_res), axis=-1)
             #Array for line indices
             ntau = np.empty([self.NumLos, self.nbins])
             #Use the maximum unsaturated optical depth
@@ -148,7 +148,7 @@ class VWSpectra(ss.Spectra):
         if number >= 0:
             ntau = ntau[number,:]
         # Convolve lines by a Gaussian filter of the resolution of the spectrograph.
-        ntau = self.res_corr(ntau, self.spec_res)
+        ntau = ss.res_corr(ntau, self.spec_res)
         #Add noise
         if noise and self.snr > 0:
             ntau = self.add_noise(self.snr, ntau, number)
@@ -331,3 +331,25 @@ class VWSpectra(ss.Spectra):
         ind = np.where(met > thresh/phys)
         return ind
 
+    def _vel_stat_hist(self, elem, ion, dv, func, log=True, filt=True):
+        """
+           Internal function that finds the histogram in velocity space of
+           the values of a statistic for a particular ion.
+        """
+        #Filter small number of spectra without metals
+        vel_width = func(elem, ion)
+        if filt:
+            ind = self.get_filt(elem, ion)
+            vel_width = vel_width[ind]
+        if np.size(dv) > 1:
+            v_table = dv
+        elif log:
+            v_table = 10**np.arange(1, np.min((50,np.log10(np.max(vel_width)))), dv)
+        else:
+            v_table = np.arange(0, 1, dv)
+        vbin = np.array([(v_table[i]+v_table[i+1])/2. for i in range(0,np.size(v_table)-1)])
+        if log:
+            vels = np.histogram(np.log10(vel_width),np.log10(v_table), density=True)[0]
+        else:
+            vels = np.histogram(vel_width,v_table, density=True)[0]
+        return (vbin, vels)

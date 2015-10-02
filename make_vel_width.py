@@ -238,6 +238,9 @@ def plot_eq_width(sims, snap):
     else:
         nv_table = 9
     (center, _) = vel_data.plot_si1526_eqw(zrange[snap], nv_table=nv_table)
+    hspec = get_hspec(5, snap, box=10)
+    hspec.label=labels["S"]
+    hspec.plot_eq_width("Si", 2, 1526, color=colors["S"], ls="--")
     hspec.plot_eq_width_errors("Si", 2, 1526, 100, color=colors2["S"], nv_table=nv_table, min_width=center[0])
     plt.xlabel(r"log $(W_\mathrm{1526} / \AA )$")
     plt.ylim(0,3)

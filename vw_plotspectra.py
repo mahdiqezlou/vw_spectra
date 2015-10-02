@@ -244,11 +244,20 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         if high - low > 0:
             plt.plot([xaxis[0]+low,xaxis[0]+low],[-1,20], color="green")
             plt.plot([xaxis[0]+high,xaxis[0]+high],[-1,20],color="red")
-        if high - low > 80:
-            tpos = xaxis[0]+low+15
+        if high - low > 30:
+            tpos = xaxis[0]+low+5
         else:
             tpos = xaxis[0]+high+5
-        plt.text(tpos,np.max(tau)-0.5,r"$\delta v_{90} = "+str(np.round(high-low,1))+r"$")
+        if high - low > 60:
+            tpos = xaxis[0]+low+25
+        if high - low > 150:
+            tpos = xaxis[0]+low+35
+        ypos = np.max(tau) -0.2
+        if np.max(tau) < 0.8:
+            ypos = 0.7
+        elif np.max(tau) > 4.:
+            ypos = 3.5
+        plt.text(tpos,ypos,r"$\Delta v_{90} = "+str(np.round(high-low,1))+r"$", size=14)
         xlims = (np.max((xaxis[0],xaxis[0]+low-20)),np.min((xaxis[-1],xaxis[0]+high+20)))
         return (xaxis, xlims)
 
