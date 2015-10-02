@@ -5,6 +5,10 @@ from __future__ import print_function
 import numpy as np
 import math
 import spectra as ss
+try:
+    xrange(1)
+except NameError:
+    xrange = range
 
 class VWSpectra(ss.Spectra):
     """"Extends the spectra class with velocity width functions."""

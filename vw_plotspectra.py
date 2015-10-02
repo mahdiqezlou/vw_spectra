@@ -7,6 +7,10 @@ import vw_spectra as vw
 import numpy as np
 import kstest as ks
 import matplotlib.pyplot as plt
+try:
+    xrange(1)
+except NameError:
+    xrange = range
 
 def _bootstrap_sample(vel_data, v_table, samples, error):
     """Generate a Monte Carlo error sample of the differential distribution."""
