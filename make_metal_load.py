@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Make some plots of the velocity widths from the cosmo runs"""
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -14,7 +15,7 @@ from save_figure import save_figure
 
 base="/home/spb/scratch/MetalLoad/"
 outdir = base + "plots/"
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 zrange = {17:(7,3.5), 25:None, 36:(2.5,0)}
 
 def plot_metallicity(sim, snap):

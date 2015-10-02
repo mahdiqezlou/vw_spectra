@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Make some HI related plots from the cosmo runs"""
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -13,7 +14,7 @@ import myname
 from save_figure import save_figure
 
 outdir = path.join(myname.base,"plots/spectra_HI")
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 
 def plot_cddf_a_halo(sim, snap, color="red", ff=True):
     """Load a simulation and plot its cddf"""
@@ -30,7 +31,7 @@ def plot_Omega_DLA(sim, color="red", ff=True):
     for snap in (1,3,5):
         hspec = ps.PlottingSpectra(snap, halo)
         om[hspec.red] = hspec.omega_DLA()
-    plt.semilogy(om.keys(), om.values(), 'o-', color=color)
+    plt.semilogy(list(om.keys()), list(om.values()), 'o-', color=color)
     plt.xlabel("z")
     plt.ylabel(r"$\Omega_{DLA}$")
     return om
@@ -47,7 +48,7 @@ def plot_rho_HI(sim, color="red", ff=True):
             del hspec
         except TypeError:
             pass
-    plt.plot(rho_HI.keys(),rho_HI.values(), color=color)
+    plt.plot(list(rho_HI.keys()),list(rho_HI.values()), color=color)
 
 def plot_dndx(sim, color="red", ff=True):
     """Plot dndx (cross-section) across redshift"""
@@ -61,7 +62,7 @@ def plot_dndx(sim, color="red", ff=True):
             del hspec
         except TypeError:
             pass
-    plt.plot(dndx.keys(),dndx.values(), color=color)
+    plt.plot(list(dndx.keys()),list(dndx.values()), color=color)
 
 colors = {0:"red", 1:"purple", 2:"blue", 3:"green", 4:"orange"}
 

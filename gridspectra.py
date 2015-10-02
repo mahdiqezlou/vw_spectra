@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Class to generate spectra in the positions where there is a DLA, as known from the grid generation."""
 
+from __future__ import print_function
 import numpy as np
 import hdfsim
 import h5py
@@ -32,7 +33,7 @@ class GridSpectra(vw_spectra.VWSpectra):
             self.replace_not_DLA(10**20.3)
         else:
             self.replace_not_DLA(10**17)
-        print "Found DLAs"
+        print("Found DLAs")
 
 
     def get_cofm(self, num = None):
@@ -117,9 +118,9 @@ class TestGridSpectra(GridSpectra):
         dlaval = self.dlaval[self.index][0]
         colden = self.get_col_density("H",1)
         specval = np.sum(colden)/self.NumLos
-        print "From spectra:",specval
-        print "From grid:",10**dlaval
-        print "different:",specval/10**dlaval
+        print("From spectra:",specval)
+        print("From grid:",10**dlaval)
+        print("different:",specval/10**dlaval)
 
     def _load_dla_val(self, gridfile, dla=True):
         """Load the values of DLAs or LLS from savefile"""

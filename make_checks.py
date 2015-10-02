@@ -2,6 +2,7 @@
 #!/usr/bin env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -15,7 +16,7 @@ import myname
 from save_figure import save_figure
 
 outdir = path.join(myname.base, "plots/checks/")
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 
 zrange = {1:(7,3.5), 3:(7,0), 5:(2.5,0)}
 

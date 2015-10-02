@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Make some plots of 2d histograms, velocity widths vs some other things"""
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -14,7 +15,7 @@ from save_figure import save_figure
 import myname
 
 outdir = path.join(myname.base, "plots/2d_hist/")
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 
 def plot_max_den(sim, snap, ff=True):
     """Load a simulation and plot the max metal density vs the max HI density"""

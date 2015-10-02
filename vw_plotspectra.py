@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Contains the plotting-specific functions specific to the velocity width analysis."""
 
+from __future__ import print_function
 import plot_spectra as ps
 import vw_spectra as vw
 import numpy as np
@@ -232,7 +233,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         m_table = 10**np.arange(np.log10(np.min(vvvir)), np.log10(np.max(vvvir)), dm)
         mbin = np.array([(m_table[i]+m_table[i+1])/2. for i in range(0,np.size(m_table)-1)])
         pdf = np.histogram(np.log10(vvvir),np.log10(m_table), density=True)[0]
-        print "median v/vir: ",np.median(vvvir)
+        print("median v/vir: ",np.median(vvvir))
         plt.semilogx(mbin, pdf, color=color, ls=ls, label=label)
         return (mbin, pdf)
 

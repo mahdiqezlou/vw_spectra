@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """This module stores routines specific to velocity width analysis of fake spectra
 """
-
+from __future__ import print_function
 import numpy as np
 import math
 import spectra as ss
@@ -314,7 +314,7 @@ class VWSpectra(ss.Spectra):
             else:
                 none += 1
         tot = dla + lls + none
-        print "Fraction DLA: ",1.*dla/tot," Fraction LLS: ",1.*lls/tot," fraction less: ",1.*none/tot
+        print("Fraction DLA: ",1.*dla/tot," Fraction LLS: ",1.*lls/tot," fraction less: ",1.*none/tot)
         return seps
 
     def get_filt(self, elem, ion, thresh = 100):

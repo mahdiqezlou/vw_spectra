@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Make some plots of 2d histograms, velocity widths vs some other things"""
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -14,7 +15,7 @@ from save_figure import save_figure
 
 outdir = path.join(myname.base, "plots/mass/2d/")
 topdir = path.join(myname.base, "plots/mass/")
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 
 zrange = {1:(7,3.5), 3:(7,0), 5:(2.5,0)}
 #Colors and linestyles for the simulations

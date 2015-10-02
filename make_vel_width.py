@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Make some plots of the velocity widths from the cosmo runs"""
 
+from __future__ import print_function
 import matplotlib
 matplotlib.use('PDF')
 
@@ -19,7 +20,7 @@ import math
 from save_figure import save_figure
 
 outdir = path.join(myname.base, "plots/")
-print "Plots at: ",outdir
+print("Plots at: ",outdir)
 zrange = {1:(7,3.5), 3:(3.5,2.5), 5:(2.5,0)}
 zzz = {1:4, 3:3, 5:2}
 #Colors and linestyles for the simulations
@@ -328,8 +329,8 @@ class RotationFiltered(ps.VWPlotSpectra):
                 continue
             #If we are, add to the list
             ind3+= [ii,]
-        print "Filtered ",np.size(ind2[0])," particles to ",np.size(ind3)
-        print "Non-rotating ",non_rot
+        print("Filtered ",np.size(ind2[0])," particles to ",np.size(ind3))
+        print("Non-rotating ",non_rot)
         return ind3
 
     def get_filt(self, elem, ion, thresh = 1e-20):
@@ -342,7 +343,7 @@ class RotationFiltered(ps.VWPlotSpectra):
         #Remember this is not in log...
         met = np.max(self.get_density(elem, ion), axis=1)
         ind = np.where(np.logical_and(met > thresh, np.max(self.get_observer_tau(elem, ion), axis=1) > 0.1))
-        print "Sightlines with rotating absorption: ",np.size(ind)
+        print("Sightlines with rotating absorption: ",np.size(ind))
         return ind
 
 def plot_v_struct(sims, snap):
@@ -496,24 +497,24 @@ def do_statistics(sim, snap):
     #Fit to both datasets
     (obs_intercept, obs_slope, obs_var) = ls.leastsq(vel,met)
     (s_intercept, s_slope, s_var) = ls.leastsq(svel,smet)
-    print "obs fit: ",obs_intercept, obs_slope, np.sqrt(obs_var)
-    print "sim fit: ",s_intercept, s_slope, np.sqrt(s_var)
+    print("obs fit: ",obs_intercept, obs_slope, np.sqrt(obs_var))
+    print("sim fit: ",s_intercept, s_slope, np.sqrt(s_var))
     #Find correlations
-    print "obs pearson r: ",ls.pearson(vel, met,obs_intercept, obs_slope)
-    print "sim pearson r: ",ls.pearson(svel, smet,s_intercept, s_slope)
-    print "obs kstest: ",ls.kstest(vel, met,obs_intercept, obs_slope)
-    print "sim kstest: ",ls.kstest(svel, smet,s_intercept, s_slope)
+    print("obs pearson r: ",ls.pearson(vel, met,obs_intercept, obs_slope))
+    print("sim pearson r: ",ls.pearson(svel, smet,s_intercept, s_slope))
+    print("obs kstest: ",ls.kstest(vel, met,obs_intercept, obs_slope))
+    print("sim kstest: ",ls.kstest(svel, smet,s_intercept, s_slope))
     #Now test whether they come from the same population
     kss = hspec.kstest(10**met, 10**vel)
-    print "KS test between simulated and observed samples: ",kss
+    print("KS test between simulated and observed samples: ",kss)
     #Do 200 trials and see how many times the KS test is worse
     ntrials = 50
     count = 0
-    for _ in xrange(ntrials):
+    for _ in range(ntrials):
         rand = np.random.randint(0,np.size(svel), np.size(vel))
         if kss <= hspec.kstest(10**smet[rand], 10**svel[rand]):
             count+=1
-    print "Prob KS test between simulated samples was larger: ",count*1./ntrials
+    print("Prob KS test between simulated samples was larger: ",count*1./ntrials)
 
 if __name__ == "__main__":
 #     plot_vel_widths_cloudy()
