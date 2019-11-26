@@ -2,9 +2,10 @@
 """This module stores routines specific to velocity width analysis of fake spectra
 """
 from __future__ import print_function
-import numpy as np
 import math
-import spectra as ss
+import numpy as np
+from fake_spectra import spectra as ss
+from fake_spectra import spec_utils
 try:
     xrange(1)
 except NameError:
@@ -26,7 +27,7 @@ class VWSpectra(ss.Spectra):
 
            Returns the low and high indices of absorption, and the offset for the maximal absorption.
         """
-        if minwidth == None:
+        if minwidth is None:
             minwidth = self.minwidth
         try:
             return self.absorber_width[(elem, ion, minwidth)]
@@ -43,9 +44,9 @@ class VWSpectra(ss.Spectra):
         strlam = int(lines.values()[ind].lambda_X)
         #Absorption in a strong line: eg, SiII1260.
         strong = self.get_tau(elem, ion, strlam)
-        (offset, roll) = ss._get_rolled_spectra(strong)
+        (offset, roll) = spec_utils.get_rolled_spectra(strong)
         #Minimum
-        if minwidth > 0 and minwidth < self.nbins/2:
+        if 0 < minwidth < self.nbins/2:
             low  = int(self.nbins/2-minwidth/self.dvbin)*np.ones(self.NumLos, dtype=np.int)
             high = int(self.nbins/2+minwidth/self.dvbin)*np.ones(self.NumLos, dtype=np.int)
         else:
@@ -88,7 +89,7 @@ class VWSpectra(ss.Spectra):
         #Coefficients come from setting tau = 1, and expanding the Voigt function used
         #in Tepper-Garcia 2006 where exp(-x^2) ~ 0 (ie, far from the line center)
         #then simplifying a bit
-        width = np.sqrt(line.gamma_X*lambdacgs*ss.units.light*col_den*sigma_a)/math.pi
+        width = np.sqrt(line.gamma_X*lambdacgs*self.units.light*col_den*sigma_a)/math.pi
         #Convert from cm/s to km/s
         return width/1e5
 
