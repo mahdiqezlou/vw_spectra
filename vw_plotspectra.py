@@ -206,6 +206,7 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         met = met[ind2]
         vel = vel[ind2]
         self._plot_2d_contour(vel, met, 10, "Z vel sim", color, color2, fit=True)
+        plt.plot(vel, met, 'o', color=color)
         plt.xlim(10,2e3)
         plt.ylabel(r"$\mathrm{Z} / \mathrm{Z}_\odot$")
         plt.xlabel(r"$v_\mathrm{90}$ (km s$^{-1}$)")
