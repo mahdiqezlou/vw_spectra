@@ -106,26 +106,15 @@ class VWSpectra(ss.Spectra):
         except KeyError:
             #Compute tau for each line
             nlines = len(self.lines[(elem,ion)])
-            tau = np.empty([nlines, self.NumLos,self.nbins])
-            pos = {}
-            vel = {}
-            elem_den = {}
-            temp = {}
-            hh = {}
-            amumass = {}
-            for ff in self.files:
-                (pos[ff], vel[ff], elem_den[ff], temp[ff], hh[ff], amumass[ff]) = self._read_particle_data(ff, elem, ion,True)
-
-            for ll in xrange(nlines):
+            tau = np.zeros([nlines, self.NumLos,self.nbins])
+            for ll in range(nlines):
                 line = (self.lines[(elem,ion)].values())[ll]
-                for ff in self.files:
-                    if amumass[ff] != False:
-                        tau_loc = self._do_interpolation_work(pos[ff], vel[ff], elem_den[ff], temp[ff], hh[ff], amumass[ff], line, True)
-                        tau[ll,:,:] += tau_loc
-                        del tau_loc
+                tau_loc = self.compute_spectra(elem, ion, line, True)
+                tau[ll,:,:] = tau_loc
+                del tau_loc
             #Maximum tau in each spectra with each line,
             #after convolving with a Gaussian for instrumental broadening.
-            maxtaus = np.max(ss.res_corr(tau,self.spec_res), axis=-1)
+            maxtaus = np.max(spec_utils.res_corr(tau, self.dvbin, self.spec_res), axis=-1)
             #Array for line indices
             ntau = np.empty([self.NumLos, self.nbins])
             #Use the maximum unsaturated optical depth
@@ -153,7 +142,7 @@ class VWSpectra(ss.Spectra):
         if number >= 0:
             ntau = ntau[number,:]
         # Convolve lines by a Gaussian filter of the resolution of the spectrograph.
-        ntau = ss.res_corr(ntau, self.spec_res)
+        ntau = spec_utils.res_corr(ntau, self.dvbin, self.spec_res)
         #Add noise
         if noise and self.snr > 0:
             ntau = self.add_noise(self.snr, ntau, number)
@@ -307,7 +296,7 @@ class VWSpectra(ss.Spectra):
             H1_l = H1_den[ll,:]
             lsep = ss.combine_regions(rho_l > thresh*np.max(rho_l), dist)
             seps[ll] = (np.shape(lsep)[0] > 1)
-            if seps[ll] == False:
+            if seps[ll] is False:
                 continue
             m_H1_colden = np.array([np.sum(H1_l[lsep[jj,0]:lsep[jj,1]]) for jj in xrange(np.shape(lsep)[0])])
             #All DLAs
@@ -331,7 +320,7 @@ class VWSpectra(ss.Spectra):
         """
         #Remember this is not in log.
         met = np.max(self.get_density(elem, ion), axis=1)
-        vw = self.vel_width(elem, ion)
+        #vw = self.vel_width(elem, ion)
         phys = self.dvbin/self.velfac*self.rscale
         ind = np.where(met > thresh/phys)
         return ind
