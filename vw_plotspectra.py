@@ -2,11 +2,12 @@
 """Contains the plotting-specific functions specific to the velocity width analysis."""
 
 from __future__ import print_function
-import plot_spectra as ps
-import vw_spectra as vw
 import numpy as np
-import kstest as ks
 import matplotlib.pyplot as plt
+from fake_spectra import plot_spectra as ps
+from fake_spectra import haloassigned_spectra as hs
+import kstest as ks
+import vw_spectra as vw
 try:
     xrange(1)
 except NameError:
@@ -23,7 +24,7 @@ def _bootstrap_sample(vel_data, v_table, samples, error):
     nn = np.histogram(bootstrap,v_table)[0]
     return nn
 
-class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
+class VWPlotSpectra(hs.HaloAssignedSpectra, ps.PlottingSpectra, vw.VWSpectra):
     """Extends PlottingSpectra with velocity width specific code."""
     def plot_vel_width(self, elem, ion, dv=0.17, color="red", ls="-"):
         """Plot the velocity widths of this snapshot
@@ -266,21 +267,25 @@ class VWPlotSpectra(ps.PlottingSpectra, vw.VWSpectra):
         xlims = (np.max((xaxis[0],xaxis[0]+low-20)),np.min((xaxis[-1],xaxis[0]+high+20)))
         return (xaxis, xlims)
 
-    def plot_spectrum(self, elem, ion, line, num, flux=True):
+    def plot_spectrum(self, elem, ion, line, spec_num, flux=True, xlims=None, color="blue", ls="-", offset=None):
         """Plot an spectrum, centered on the maximum tau,
            and marking the 90% velocity width.
            offset: offset in km/s for the x-axis labels"""
         if line == -1:
-            tau_no = self.get_observer_tau(elem, ion, num, noise=False)
-            tau = self.get_observer_tau(elem, ion, num, noise=True)
+            tau_no = self.get_observer_tau(elem, ion, spec_num, noise=False)
+            tau = self.get_observer_tau(elem, ion, spec_num, noise=True)
         else:
-            tau_no = self.get_tau(elem, ion, line, num, noise=False)
-            tau = self.get_tau(elem, ion, line, num, noise=True)
-        (low, high, offset) = self.find_absorber_width(elem, ion)
-        tau_l = np.roll(tau_no, offset[num])[low[num]:high[num]]
-        (xaxis, xlims) = self.plot_vbars(tau_l)
-        tau_l = np.roll(tau, offset[num])[low[num]:high[num]]
-        return self.plot_spectrum_raw(tau_l,xaxis, xlims, flux)
+            tau_no = self.get_tau(elem, ion, line, spec_num, noise=False)
+            tau = self.get_tau(elem, ion, line, spec_num, noise=True)
+        (low, high, offset_def) = self.find_absorber_width(elem, ion)
+        if offset is None:
+            offset = offset_def
+        tau_l = np.roll(tau_no, offset[spec_num])[low[spec_num]:high[spec_num]]
+        (xaxis, xlims_def) = self.plot_vbars(tau_l)
+        if xlims is None:
+            xlims = xlims_def
+        tau_l = np.roll(tau, offset[spec_num])[low[spec_num]:high[spec_num]]
+        return self.plot_spectrum_raw(tau_l,xaxis, xlims, flux=flux, color=color, ls=ls)
 
     def get_filt(self, elem, ion, thresh = 100):
         """
