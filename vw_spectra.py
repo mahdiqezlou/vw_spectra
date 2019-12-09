@@ -13,6 +13,9 @@ except NameError:
 
 class VWSpectra(ss.Spectra):
     """"Extends the spectra class with velocity width functions."""
+        def __init__(self,num, base, load_snapshot = True,cofm=None, axis=None, label="", snr=0., load_halo=True,**kwargs):
+
+        ss.Spectra.__init__(self,num, base, cofm=cofm, load_snapshot=load_snapshot ,axis=axis, snr=snr, load_halo=load_halo, **kwargs)
 
     def find_absorber_width(self, elem, ion, chunk = 20, minwidth=None):
         """
