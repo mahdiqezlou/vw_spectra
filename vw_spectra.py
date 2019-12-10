@@ -44,7 +44,7 @@ class VWSpectra(ss.Spectra):
         strength = [ll.fosc_X*ll.lambda_X for ll in lines.values()]
         ind = np.where(strength == np.max(strength))[0][0]
         #Lines are indexed by wavelength
-        strlam = int(lines.values()[ind].lambda_X)
+        strlam = int(list(lines.values())[ind].lambda_X)
         #Absorption in a strong line: eg, SiII1260.
         strong = self.get_tau(elem, ion, strlam)
         (offset, roll) = spec_utils.get_rolled_spectra(strong)
