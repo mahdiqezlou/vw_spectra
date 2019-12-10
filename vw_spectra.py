@@ -111,7 +111,7 @@ class VWSpectra(ss.Spectra):
             nlines = len(self.lines[(elem,ion)])
             tau = np.zeros([nlines, self.NumLos,self.nbins])
             for ll in range(nlines):
-                line = list(self.lines[(elem,ion)].values())[ll]
+                line = list(self.lines[(elem,ion)].keys())[ll]
                 tau_loc = self.compute_spectra(elem, ion, line, True)
                 tau[ll,:,:] = tau_loc
                 del tau_loc
