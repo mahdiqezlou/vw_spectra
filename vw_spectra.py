@@ -13,10 +13,11 @@ except NameError:
 
 class VWSpectra(ss.Spectra):
     """"Extends the spectra class with velocity width functions."""
-    def __init__(self,num, base, load_snapshot = True,cofm=None, axis=None, label="", snr=0., load_halo=True,**kwargs):
+    def __init__(self,num, base, cofm=None, axis=None, label="", snr=0., spec_res = 8.0,load_halo=True,**kwargs):
         
-        ss.Spectra.__init__(self,num, base, cofm=cofm, load_snapshot=load_snapshot ,axis=axis, snr=snr, load_halo=load_halo, **kwargs)
-        
+        ss.Spectra.__init__(self,num, base, cofm=cofm, axis=axis, snr=snr, spec_res = spec_res,load_halo=load_halo, **kwargs)
+
+
     def find_absorber_width(self, elem, ion, chunk = 20, minwidth=None):
         """
            Find the region in velocity space considered to be an absorber for each spectrum.
@@ -111,8 +112,11 @@ class VWSpectra(ss.Spectra):
             nlines = len(self.lines[(elem,ion)])
             tau = np.zeros([nlines, self.NumLos,self.nbins])
             for ll in range(nlines):
-                line = list(self.lines[(elem,ion)].keys())[ll]
-                tau_loc = self.compute_spectra(elem, ion, line, True)
+                #line = list(self.lines[(elem,ion)].values())[ll]
+                #tau_loc = self.compute_spectra(elem, ion, line, True)
+                #tau_loc = self.compute_spectra(elem, ion, ll, True)
+                line_key = list(self.lines[(elem,ion)].keys())[ll]
+                tau_loc = self.compute_spectra(elem, ion, line_key, True)
                 tau[ll,:,:] = tau_loc
                 del tau_loc
             #Maximum tau in each spectra with each line,
@@ -325,7 +329,10 @@ class VWSpectra(ss.Spectra):
         met = np.max(self.get_density(elem, ion), axis=1)
         #vw = self.vel_width(elem, ion)
         phys = self.dvbin/self.velfac*self.rscale
-        ind = np.where(met > thresh/phys)
+        ind = np.where(np.logical_and((met > thresh/phys), np.max(self.get_observer_tau(elem,ion), axis=1)>0.1))
+        
+        #ind = np.where(np.logical_and(met > 1e-20, np.max(self.get_observer_tau(elem, ion), axis=1) > 0.1))
+
         return ind
 
     def _vel_stat_hist(self, elem, ion, dv, func, log=True, filt=True):
